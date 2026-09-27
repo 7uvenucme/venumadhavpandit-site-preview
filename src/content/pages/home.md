@@ -9,7 +9,7 @@ heroImage: /images/flying-chairs.webp
 heroImageAlt: 'A green chair stands still while orange chairs fly around it, artwork by Venumadhav Pandit'
 heroImageCaption: Artwork by Venumadhav Pandit
 sectionEyebrow: Selected work
-sectionTitle: Recent builds (Not AI)
+sectionTitle: Recent builds
 sectionLinkLabel: All builds
 shippedTitle: Shipped
 shippedUpdates:
@@ -25,7 +25,7 @@ shippedUpdates:
     text: Voice Chat just went live on the mahindraelectricsuv.com. Check it out
     link: 'https://www.mahindraelectricsuv.com'
     linkLabel: Visit mahindraelectricsuv.com
-artworkTitle: Recent artwork
+artworkTitle: Recent artwork (Not AI)
 artworks:
   - image: /images/artwork/artwork-01.webp
     thumbnail: /images/artwork/artwork-01-thumb.webp
