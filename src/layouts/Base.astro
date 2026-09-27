@@ -1,8 +1,10 @@
 ---
 import '../styles/global.css';
-interface Props { title: string; description: string; socialImage?: string; preloadImage?: string; preloadSrcset?: string; preloadSizes?: string; }
-const { title, description, socialImage = '/images/flying-chairs.png', preloadImage, preloadSrcset, preloadSizes } = Astro.props;
+interface Props { title: string; description: string; socialImage?: string; socialTitle?: string; socialDescription?: string; preloadImage?: string; preloadSrcset?: string; preloadSizes?: string; }
+const { title, description, socialImage = '/images/flying-chairs.png', socialTitle, socialDescription, preloadImage, preloadSrcset, preloadSizes } = Astro.props;
 const displayTitle = title.includes("Venumadhav Pandit") ? title : `${title} | Venumadhav Pandit`;
+const previewTitle = socialTitle || displayTitle;
+const previewDescription = socialDescription || description;
 const cutover = import.meta.env.SITE_TARGET === 'cutover';
 const enableAnalytics = cutover;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
@@ -14,8 +16,8 @@ const nav = [{label:'Home',path:'/'},{label:'Builds',path:'/builds/'},{label:'Ab
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="description" content={description}/><meta name="theme-color" content="#f7f8f5"/><title>{displayTitle}</title>
 {cutover ? <link rel="canonical" href={canonical}/> : <meta name="robots" content="noindex, follow"/>}
-<meta property="og:type" content="website"/><meta property="og:site_name" content="Venumadhav Pandit"/><meta property="og:title" content={displayTitle}/><meta property="og:description" content={description}/><meta property="og:url" content={canonical}/><meta property="og:image" content={image}/><meta property="og:image:alt" content="Artwork and projects by Venumadhav Pandit"/>
-<meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content={displayTitle}/><meta name="twitter:description" content={description}/><meta name="twitter:image" content={image}/>
+<meta property="og:type" content="website"/><meta property="og:site_name" content="Venumadhav Pandit"/><meta property="og:title" content={previewTitle}/><meta property="og:description" content={previewDescription}/><meta property="og:url" content={canonical}/><meta property="og:image" content={image}/><meta property="og:image:secure_url" content={image}/><meta property="og:image:type" content={socialImage.endsWith('.jpg') ? 'image/jpeg' : socialImage.endsWith('.png') ? 'image/png' : 'image/webp'}/><meta property="og:image:width" content={socialImage === '/images/share-preview.jpg' ? '1200' : undefined}/><meta property="og:image:height" content={socialImage === '/images/share-preview.jpg' ? '630' : undefined}/><meta property="og:image:alt" content="Venumadhav Pandit - ideas I make real, with orange and green chair artwork"/>
+<meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content={previewTitle}/><meta name="twitter:description" content={previewDescription}/><meta name="twitter:image" content={image}/><meta name="twitter:image:alt" content="Venumadhav Pandit - ideas I make real, with orange and green chair artwork"/>
 {enableAnalytics && <script is:inline>window.addEventListener('load',function(){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}window.gtag=gtag;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-96HHXK5W0K';document.head.appendChild(s);gtag('js',new Date());gtag('config','G-96HHXK5W0K');});</script>}
 {preloadImage && <link rel="preload" as="image" href={href(preloadImage)} imagesrcset={preloadSrcset} imagesizes={preloadSizes} fetchpriority="high"/>}
 <link rel="preload" href={href('/fonts/manrope-latin.woff2')} as="font" type="font/woff2" crossorigin/>
