@@ -51,7 +51,7 @@ hobbies:
     detail: "Trying to get to sub 1-min solves"
   - name: "Fitness"
     detail: "Goal is to get to 2-min deadhangs"
-playlistTitle: "On repeat"
+playlistTitle: "My current playlist"
 playlistUrl: "https://open.spotify.com/playlist/58zFYzZ4afCPKGvBYn8NiV?si=74564b1e96ee4b9b"
 toolsTitle: "Tools I use"
 tools:
