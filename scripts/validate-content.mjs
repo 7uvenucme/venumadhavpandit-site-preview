@@ -34,6 +34,17 @@ for (const file of fs.readdirSync(pages).filter(f => f.endsWith('.md'))) {
   }
   if (file === 'home.md') {
     for (const f of ['heroEyebrow','heroTitle','heroIntro','heroButtonLabel','heroImage','heroImageAlt','heroImageCaption','sectionEyebrow','sectionTitle','sectionLinkLabel','artworkTitle','readingTitle','bookTitle','bookCover','bookCoverAlt','bookQuote','hobbiesTitle','playlistTitle','playlistUrl','toolsTitle']) nonBlank(data[f], `${at}:${f}`);
+    nonBlank(data.shippedTitle, `${at}:shippedTitle`);
+    list(data.shippedUpdates, `${at}:shippedUpdates`, ['month','text']);
+    if (Array.isArray(data.shippedUpdates)) data.shippedUpdates.forEach((post, i) => {
+      const label = `${at}:shippedUpdates[${i+1}]`;
+      if (typeof post.month === 'string' && (!/^(19|20)\d{2}-(0[1-9]|1[0-2])$/.test(post.month))) errors.push(`${label}.month must be YYYY-MM`);
+      if (post.link && !/^https:\/\//.test(post.link)) errors.push(`${label}.link must use HTTPS`);
+      if (post.linkLabel && !post.link) errors.push(`${label}.linkLabel needs a link`);
+      if (post.image && !post.image.startsWith('/images/')) errors.push(`${label}.image must be a site image`);
+      if (post.image && !post.imageAlt?.trim()) errors.push(`${label}.imageAlt is blank`);
+      if (post.videoUrl && !/^https:\/\/.+\.(mp4|webm)(\?.*)?$/i.test(post.videoUrl)) errors.push(`${label}.videoUrl must point to an HTTPS .mp4 or .webm file`);
+    });
     list(data.artworks, `${at}:artworks`, ['image','alt']);
     list(data.hobbies, `${at}:hobbies`, ['name','detail','icon']);
     list(data.tools, `${at}:tools`, ['category','tool']);

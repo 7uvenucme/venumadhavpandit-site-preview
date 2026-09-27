@@ -37,6 +37,8 @@ const pages = defineCollection({
     sectionEyebrow: z.string().optional(),
     sectionTitle: z.string().optional(),
     sectionLinkLabel: z.string().optional(),
+    shippedTitle: z.string().optional(),
+    shippedUpdates: z.array(z.object({ month: z.string(), text: z.string(), link: z.string().optional(), linkLabel: z.string().optional(), image: z.string().optional(), imageAlt: z.string().optional(), videoUrl: z.string().optional() })).optional(),
     artworkTitle: z.string().optional(),
     artworks: z.array(z.object({ image: z.string(), thumbnail: z.string().optional(), alt: z.string() })).optional(),
     readingTitle: z.string().optional(),
