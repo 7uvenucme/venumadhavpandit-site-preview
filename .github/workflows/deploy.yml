@@ -26,13 +26,20 @@ jobs:
       - run: npm ci
 
       - name: Build TinaCMS admin
-        run: npx tinacms build
+        run: npx tinacms build --skip-cloud-checks --skip-indexing --skip-search-index
         env:
           TINA_PUBLIC_CLIENT_ID: ${{ secrets.TINA_PUBLIC_CLIENT_ID }}
           TINA_TOKEN: ${{ secrets.TINA_TOKEN }}
 
+      - name: Commit tina-lock.json back to main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tina/tina-lock.json
+          git diff --cached --quiet || git commit -m "Update tina-lock.json [skip ci]"
+          git push || true
       - name: Build site (cutover target)
-        run: SITE_TARGET=cutover npm run build
+        run: SITE_TARGET=cutover npx astro build
 
       - name: Publish dist to gh-pages
         run: |
