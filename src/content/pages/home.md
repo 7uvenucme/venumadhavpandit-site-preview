@@ -45,12 +45,26 @@ bookTitle: "The Almanack of Naval Ravikant"
 bookCover: "/images/naval-almanack.webp"
 bookCoverAlt: "Cover of The Almanack of Naval Ravikant"
 bookQuote: "Capital and labour are permissioned leverage. Code and media are permissionless leverage."
-hobbiesTitle: "Hobbies"
+hobbiesTitle: "Current interests"
 hobbies:
   - name: "Rubik's Cube"
     detail: "Trying to get to sub 1-min solves"
+    icon: cube
   - name: "Fitness"
     detail: "Goal is to get to 2-min deadhangs"
+    icon: dumbbell
+  - name: "Mechanical Keyboards"
+    detail: "Still searching for that perfect, creamy sound profile"
+    icon: keyboard
+  - name: "Learning Japanese"
+    detail: "Keeping the momentum alive with a 400+ day streak!"
+    icon: book
+  - name: "Sketching"
+    detail: "Lately, I've been spending a lot of time sketching cars and spaceships"
+    icon: pencil
+  - name: "Music"
+    detail: "Constantly shuffling back and forth between the guitar and the keyboard"
+    icon: music
 playlistTitle: "My current playlist"
 playlistUrl: "https://open.spotify.com/playlist/58zFYzZ4afCPKGvBYn8NiV?si=74564b1e96ee4b9b"
 toolsTitle: "Tools I use"
@@ -71,4 +85,6 @@ tools:
     tool: "GoDaddy"
   - category: "Frontend"
     tool: "HTML CSS js"
+  - category: "3D renders"
+    tool: "Blender"
 ---

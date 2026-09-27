@@ -45,7 +45,7 @@ const pages = defineCollection({
     bookCoverAlt: z.string().optional(),
     bookQuote: z.string().optional(),
     hobbiesTitle: z.string().optional(),
-    hobbies: z.array(z.object({ name: z.string(), detail: z.string() })).optional(),
+    hobbies: z.array(z.object({ name: z.string(), detail: z.string(), icon: z.string().optional() })).optional(),
     playlistTitle: z.string().optional(),
     playlistUrl: z.string().url().optional(),
     toolsTitle: z.string().optional(),
