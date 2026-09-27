@@ -2,6 +2,7 @@
 import '../styles/global.css';
 interface Props { title: string; description: string; socialImage?: string; preloadImage?: string; }
 const { title, description, socialImage = '/images/flying-chairs.png', preloadImage } = Astro.props;
+const displayTitle = title.includes("Venumadhav Pandit") ? title : `${title} | Venumadhav Pandit`;
 const cutover = import.meta.env.SITE_TARGET === 'cutover';
 const enableAnalytics = cutover;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
@@ -11,10 +12,10 @@ const href = (path: string) => `${base}${path}`;
 const nav = [{label:'Home',path:'/'},{label:'Builds',path:'/builds/'},{label:'About',path:'/about/'},{label:'Contact',path:'/contact/'}];
 ---
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="description" content={description}/><meta name="theme-color" content="#f7f8f5"/><title>{title} | Venumadhav Pandit</title>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="description" content={description}/><meta name="theme-color" content="#f7f8f5"/><title>{displayTitle}</title>
 {cutover ? <link rel="canonical" href={canonical}/> : <meta name="robots" content="noindex, follow"/>}
-<meta property="og:type" content="website"/><meta property="og:site_name" content="Venumadhav Pandit"/><meta property="og:title" content={`${title} | Venumadhav Pandit`}/><meta property="og:description" content={description}/><meta property="og:url" content={canonical}/><meta property="og:image" content={image}/><meta property="og:image:alt" content="Artwork and projects by Venumadhav Pandit"/>
-<meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content={`${title} | Venumadhav Pandit`}/><meta name="twitter:description" content={description}/><meta name="twitter:image" content={image}/>
+<meta property="og:type" content="website"/><meta property="og:site_name" content="Venumadhav Pandit"/><meta property="og:title" content={displayTitle}/><meta property="og:description" content={description}/><meta property="og:url" content={canonical}/><meta property="og:image" content={image}/><meta property="og:image:alt" content="Artwork and projects by Venumadhav Pandit"/>
+<meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content={displayTitle}/><meta name="twitter:description" content={description}/><meta name="twitter:image" content={image}/>
 {enableAnalytics && <><script async src="https://www.googletagmanager.com/gtag/js?id=G-96HHXK5W0K"></script><script is:inline>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-96HHXK5W0K');</script></>}
 {preloadImage && <link rel="preload" as="image" href={href(preloadImage)}/>}
 <link rel="icon" href={href('/favicon.svg')} type="image/svg+xml"/></head>

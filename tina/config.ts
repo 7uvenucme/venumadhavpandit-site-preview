@@ -2,15 +2,23 @@ import { defineConfig } from "tinacms";
 
 const branch = process.env.GITHUB_BRANCH || process.env.HEAD || "main";
 
+// Blank fields should fail in the editor, not quietly publish missing content.
+const nonBlank = (label: string) => ({ validate: (value: string) =>
+  typeof value === "string" && value.trim().length > 0 ? undefined : `${label} cannot be blank.` });
+const requiredText = (name: string, label: string, extra: Record<string, unknown> = {}) =>
+  ({ type: "string" as const, name, label, required: true, ui: { ...nonBlank(label), ...extra } });
+const requiredImage = (name: string, label: string) =>
+  ({ type: "image" as const, name, label, required: true, ui: nonBlank(label) });
+
 const seoFields = [
-  { type: "string" as const, name: "title", label: "SEO title", required: true },
-  { type: "string" as const, name: "description", label: "SEO description", required: true, ui: { component: "textarea" } },
+  requiredText("title", "SEO title"),
+  requiredText("description", "SEO description", { component: "textarea" }),
 ];
 
 const headerFields = [
-  { type: "string" as const, name: "eyebrow", label: "Eyebrow (small label above the title)" },
-  { type: "string" as const, name: "pageTitle", label: "Page title" },
-  { type: "string" as const, name: "lede", label: "Intro paragraph", ui: { component: "textarea" } },
+  requiredText("eyebrow", "Eyebrow (small label above the title)"),
+  requiredText("pageTitle", "Page title"),
+  requiredText("lede", "Intro paragraph", { component: "textarea" }),
 ];
 
 const timelineField = (name: string, label: string) => ({
@@ -18,11 +26,12 @@ const timelineField = (name: string, label: string) => ({
   name,
   label,
   list: true,
+  required: true,
   ui: { itemProps: (item: any) => ({ label: item?.org }) },
   fields: [
-    { type: "string" as const, name: "years", label: "Years" },
-    { type: "string" as const, name: "org", label: "Organization" },
-    { type: "string" as const, name: "role", label: "Role" },
+    requiredText("years", "Years"),
+    requiredText("org", "Organization"),
+    requiredText("role", "Role"),
   ],
 });
 
@@ -54,7 +63,7 @@ export default defineConfig({
           { type: "number", name: "year", label: "Year" },
           { type: "boolean", name: "featured", label: "Show on homepage" },
           { type: "image", name: "cardImage", label: "Card image (grid thumbnail)" },
-          { type: "image", name: "image", label: "Main image (top of project page)" },
+          requiredImage("image", "Main image (top of project page)"),
           { type: "string", name: "imageAlt", label: "Image alt text" },
           { type: "string", name: "imageCredit", label: "Image credit" },
           { type: "rich-text", name: "body", label: "Project story", isBody: true },
@@ -68,47 +77,47 @@ export default defineConfig({
         match: { include: "home" },
         fields: [
           ...seoFields,
-          { type: "string", name: "heroEyebrow", label: "Hero eyebrow" },
-          { type: "string", name: "heroTitle", label: "Hero headline (HTML like <em> allowed)" },
-          { type: "string", name: "heroIntro", label: "Hero intro", ui: { component: "textarea" } },
-          { type: "string", name: "heroButtonLabel", label: "Hero button label" },
-          { type: "image", name: "heroImage", label: "Hero artwork" },
-          { type: "string", name: "heroImageAlt", label: "Hero artwork alt text" },
-          { type: "string", name: "heroImageCaption", label: "Hero artwork caption" },
-          { type: "string", name: "sectionEyebrow", label: "Projects section eyebrow" },
-          { type: "string", name: "sectionTitle", label: "Projects section title" },
-          { type: "string", name: "sectionLinkLabel", label: "Projects section link label" },
-          { type: "string", name: "artworkTitle", label: "Artwork section title" },
-          { type: "object", name: "artworks", label: "Recent artwork", list: true,
+          requiredText("heroEyebrow", "Hero eyebrow"),
+          requiredText("heroTitle", "Hero headline (HTML like <em> allowed)"),
+          requiredText("heroIntro", "Hero intro", { component: "textarea" }),
+          requiredText("heroButtonLabel", "Hero button label"),
+          requiredImage("heroImage", "Hero artwork"),
+          requiredText("heroImageAlt", "Hero artwork alt text"),
+          requiredText("heroImageCaption", "Hero artwork caption"),
+          requiredText("sectionEyebrow", "Projects section eyebrow"),
+          requiredText("sectionTitle", "Projects section title"),
+          requiredText("sectionLinkLabel", "Projects section link label"),
+          requiredText("artworkTitle", "Artwork section title"),
+          { type: "object", name: "artworks", required: true, label: "Recent artwork", list: true,
             ui: { itemProps: (item: any) => ({ label: item?.alt || "Artwork" }) },
             fields: [
-              { type: "image", name: "image", label: "Full artwork" },
+              requiredImage("image", "Full artwork"),
               { type: "image", name: "thumbnail", label: "Thumbnail (optional)" },
-              { type: "string", name: "alt", label: "Artwork description (alt text)" },
+              requiredText("alt", "Artwork description (alt text)"),
             ],
           },
-          { type: "string", name: "readingTitle", label: "Reading section title" },
-          { type: "string", name: "bookTitle", label: "Book title" },
-          { type: "image", name: "bookCover", label: "Book cover" },
-          { type: "string", name: "bookCoverAlt", label: "Book cover description" },
-          { type: "string", name: "bookQuote", label: "Highlighted quote", ui: { component: "textarea" } },
-          { type: "string", name: "hobbiesTitle", label: "Current interests section title" },
-          { type: "object", name: "hobbies", label: "Current interests", list: true,
+          requiredText("readingTitle", "Reading section title"),
+          requiredText("bookTitle", "Book title"),
+          requiredImage("bookCover", "Book cover"),
+          requiredText("bookCoverAlt", "Book cover description"),
+          requiredText("bookQuote", "Highlighted quote", { component: "textarea" }),
+          requiredText("hobbiesTitle", "Current interests section title"),
+          { type: "object", name: "hobbies", required: true, label: "Current interests", list: true,
             ui: { itemProps: (item: any) => ({ label: item?.name || "Interest" }) },
             fields: [
-              { type: "string", name: "name", label: "Name" },
-              { type: "string", name: "detail", label: "One line" },
-              { type: "string", name: "icon", label: "Icon", options: ["cube", "dumbbell", "keyboard", "book", "pencil", "music"] },
+              requiredText("name", "Name"),
+              requiredText("detail", "One line"),
+              { type: "string", name: "icon", label: "Icon", required: true, options: ["cube", "dumbbell", "keyboard", "book", "pencil", "music"] },
             ],
           },
-          { type: "string", name: "playlistTitle", label: "Playlist section title" },
-          { type: "string", name: "playlistUrl", label: "Spotify playlist URL" },
-          { type: "string", name: "toolsTitle", label: "Tools section title" },
-          { type: "object", name: "tools", label: "Tools I use (category and tool)", list: true,
+          requiredText("playlistTitle", "Playlist section title"),
+          requiredText("playlistUrl", "Spotify playlist URL"),
+          requiredText("toolsTitle", "Tools section title"),
+          { type: "object", name: "tools", required: true, label: "Tools I use (category and tool)", list: true,
             ui: { itemProps: (item: any) => ({ label: item?.category || "Tool" }) },
             fields: [
-              { type: "string", name: "category", label: "Category" },
-              { type: "string", name: "tool", label: "Tool" },
+              requiredText("category", "Category"),
+              requiredText("tool", "Tool"),
             ],
           },
         ],
@@ -122,13 +131,13 @@ export default defineConfig({
         fields: [
           ...seoFields,
           ...headerFields,
-          { type: "image", name: "figureImage", label: "Artwork" },
-          { type: "string", name: "figureAlt", label: "Artwork alt text" },
-          { type: "string", name: "figureCaption", label: "Artwork caption" },
+          requiredImage("figureImage", "Artwork"),
+          requiredText("figureAlt", "Artwork alt text"),
+          requiredText("figureCaption", "Artwork caption"),
           { type: "rich-text", name: "body", label: "Intro text (below artwork)", isBody: true },
-          { type: "string", name: "experienceHeading", label: "Experience heading" },
+          requiredText("experienceHeading", "Experience heading"),
           timelineField("experience", "Experience"),
-          { type: "string", name: "educationHeading", label: "Education heading" },
+          requiredText("educationHeading", "Education heading"),
           timelineField("education", "Education"),
         ],
       },
@@ -141,9 +150,9 @@ export default defineConfig({
         fields: [
           ...seoFields,
           ...headerFields,
-          { type: "string", name: "email", label: "Email address" },
-          { type: "string", name: "linkedinUrl", label: "LinkedIn URL" },
-          { type: "string", name: "linkedinLabel", label: "LinkedIn link text" },
+          requiredText("email", "Email address"),
+          requiredText("linkedinUrl", "LinkedIn URL"),
+          requiredText("linkedinLabel", "LinkedIn link text"),
         ],
       },
       {
@@ -163,21 +172,22 @@ export default defineConfig({
         fields: [
           ...seoFields,
           ...headerFields,
-          { type: "string", name: "storyLinkLabel", label: "Project story link label" },
-          { type: "string", name: "releasesHeading", label: "Release log heading" },
+          requiredText("storyLinkLabel", "Project story link label"),
+          requiredText("releasesHeading", "Release log heading"),
           {
             type: "object",
             name: "releases",
+            required: true,
             label: "Release log entries",
             list: true,
             ui: { itemProps: (item: any) => ({ label: item?.heading }) },
             fields: [
-              { type: "string", name: "heading", label: "Version and date" },
-              { type: "string", name: "body", label: "Notes", ui: { component: "textarea" } },
+              requiredText("heading", "Version and date"),
+              requiredText("body", "Notes", { component: "textarea" }),
             ],
           },
-          { type: "string", name: "termsHeading", label: "Terms heading" },
-          { type: "string", name: "privacyHeading", label: "Privacy heading" },
+          requiredText("termsHeading", "Terms heading"),
+          requiredText("privacyHeading", "Privacy heading"),
         ],
       },
       {

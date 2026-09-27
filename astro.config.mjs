@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import './scripts/validate-content.mjs'; // Fail Astro/CI builds on empty published fields.
 
 // Preview remains at the GitHub project path; cutover builds target the approved domain.
 const cutover = process.env.SITE_TARGET === 'cutover';
