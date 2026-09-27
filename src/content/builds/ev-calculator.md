@@ -1,7 +1,7 @@
 ---
 title: EV Calculator
 eyebrow: Utility
-summary: A tool to explore whether switching to an electric vehicle makes financial sense.
+summary: A calculator for thinking through the cost of switching to an EV. Enter your driving habits, tinker with the fields to get your answer.
 featured: true
 image: /images/calculator-stock.webp
 cardImage: /images/calculator-card.webp

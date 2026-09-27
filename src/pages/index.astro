@@ -4,5 +4,47 @@ import { getCollection, getEntry } from 'astro:content';
 const d = (await getEntry('pages', 'home'))!.data;
 const builds = (await getCollection('builds')).filter(x=>x.data.featured).sort((a,b)=>(b.data.year??0)-(a.data.year??0));
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const spotifyId = new URL(d.playlistUrl || 'https://open.spotify.com/playlist/58zFYzZ4afCPKGvBYn8NiV').pathname.match(/^\/playlist\/([A-Za-z0-9]+)$/)?.[1];
 ---
-<Base title={d.title} description={d.description} preloadImage={d.heroImage}><section class="hero"><div class="container hero-grid"><div><span class="eyebrow">{d.heroEyebrow}</span><h1 set:html={d.heroTitle}></h1><p>{d.heroIntro}</p><a class="button" href={`${base}/builds/`}>{d.heroButtonLabel} <span aria-hidden="true">↗</span></a></div><figure class="hero-art"><img src={`${base}${d.heroImage}`} alt={d.heroImageAlt} width="1080" height="1080" fetchpriority="high" decoding="async"/><figcaption>{d.heroImageCaption}</figcaption></figure></div></section><section class="section"><div class="container"><div class="section-head"><div><span class="eyebrow">{d.sectionEyebrow}</span><h2>{d.sectionTitle}</h2></div><a href={`${base}/builds/`}>{d.sectionLinkLabel} ↗</a></div><div class="project-grid">{builds.map(build=><a class="project-card" href={`${base}/builds/${build.id}/`}><div class="visual">{build.data.image ? <img src={`${base}${build.data.cardImage || build.data.image}`} alt={build.data.imageAlt || ''} loading="lazy"/> : <span class="monogram" aria-hidden="true">{build.id==='mfan-2026'?'MF':'EV'}</span>}</div><div class="card-body"><span class="eyebrow">{build.data.eyebrow}{build.data.year ? ` · ${build.data.year}` : ""}</span><h3>{build.data.title}</h3><p>{build.data.summary}</p></div><span class="arrow">Explore project ↗</span></a>)}</div></div></section></Base>
+<Base title={d.title || ''} description={d.description || ''} preloadImage={d.heroImage}>
+  <section class="hero"><div class="container hero-grid"><div><span class="eyebrow">{d.heroEyebrow}</span><h1 set:html={d.heroTitle}></h1><p>{d.heroIntro}</p><a class="button" href={`${base}/builds/`}>{d.heroButtonLabel} <span aria-hidden="true">↗</span></a></div><figure class="hero-art"><img src={`${base}${d.heroImage}`} alt={d.heroImageAlt} width="1080" height="1080" fetchpriority="high" decoding="async"/><figcaption>{d.heroImageCaption}</figcaption></figure></div></section>
+  <section class="section"><div class="container"><div class="section-head"><div><span class="eyebrow">{d.sectionEyebrow}</span><h2>{d.sectionTitle}</h2></div><a href={`${base}/builds/`}>{d.sectionLinkLabel} ↗</a></div><div class="project-grid">{builds.map(build=><a class="project-card" href={`${base}/builds/${build.id}/`}><div class="visual">{build.data.image ? <img src={`${base}${build.data.cardImage || build.data.image}`} alt={build.data.imageAlt || ''} loading="lazy"/> : <span class="monogram" aria-hidden="true">{build.id==='mfan-2026'?'MF':'EV'}</span>}</div><div class="card-body"><span class="eyebrow">{build.data.eyebrow}{build.data.year ? ` · ${build.data.year}` : ""}</span><h3>{build.data.title}</h3><p>{build.data.summary}</p></div><span class="arrow">Explore project ↗</span></a>)}</div></div></section>
+  {d.artworks?.length && <section class="section artwork-section" aria-labelledby="artwork-heading"><div class="container"><div class="section-head"><div><span class="eyebrow">Visual explorations</span><h2 id="artwork-heading">{d.artworkTitle}</h2></div><div class="art-controls"><button id="art-prev" class="round-button" aria-label="Scroll artwork left" type="button">←</button><button id="art-next" class="round-button" aria-label="Scroll artwork right" type="button">→</button></div></div><div class="art-track" id="art-track" aria-label="Recent artwork">{d.artworks.map((art, i) => <button class="art-tile" type="button" data-art-index={i} data-full-src={`${base}${art.image}`} aria-label={`View artwork ${i+1} of ${d.artworks?.length}: ${art.alt}`}><img src={`${base}${art.thumbnail || art.image}`} alt={art.alt} loading={i < 2 ? "eager" : "lazy"} width="560" height="560" /></button>)}</div><p class="art-hint">Select a piece to view it larger.</p></div><dialog id="art-dialog" class="art-dialog" aria-label="Artwork viewer"><div class="viewer"><div class="viewer-top"><span id="art-counter"></span><button id="art-close" type="button" aria-label="Close artwork">Close ×</button></div><div class="viewer-body"><button id="viewer-prev" type="button" class="viewer-arrow" aria-label="Previous artwork">←</button><img id="art-full" alt="" /><button id="viewer-next" type="button" class="viewer-arrow" aria-label="Next artwork">→</button></div><p id="art-caption"></p></div></dialog></section>}
+  <section class="section offclock" aria-labelledby="offclock-heading"><div class="container"><div class="section-head"><div><span class="eyebrow">Away from the builds</span><h2 id="offclock-heading">Off the clock</h2></div></div><div class="offclock-grid"><section class="personal-card reading"><h3>{d.readingTitle}</h3><div class="reading-inner"><img src={`${base}${d.bookCover}`} alt={d.bookCoverAlt || ''} loading="lazy" width="162" height="250" /><div><p class="book-title">{d.bookTitle}</p><blockquote>“{d.bookQuote}”</blockquote></div></div></section><section class="personal-card"><h3>{d.hobbiesTitle}</h3><div class="hobby-grid">{d.hobbies?.map(h => <div class="hobby"><h4>{h.name}</h4><p>{h.detail}</p></div>)}</div></section><section class="personal-card playlist"><h3>{d.playlistTitle}</h3>{spotifyId ? <iframe title="Venumadhav's Spotify playlist" src={`https://open.spotify.com/embed/playlist/${spotifyId}?utm_source=generator`} width="100%" height="152" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe> : <a href={d.playlistUrl}>Listen on Spotify ↗</a>}</section><section class="personal-card"><h3>{d.toolsTitle}</h3><table class="tools-table"><thead><tr><th scope="col">What for</th><th scope="col">What I use</th></tr></thead><tbody>{d.tools?.map(t => <tr><th scope="row">{t.category}</th><td>{t.tool}</td></tr>)}</tbody></table></section></div></div></section>
+</Base>
+<script>
+  const track = document.querySelector<HTMLElement>('#art-track');
+  const tiles = [...document.querySelectorAll<HTMLButtonElement>('.art-tile')];
+  const dialog = document.querySelector<HTMLDialogElement>('#art-dialog');
+  const full = document.querySelector<HTMLImageElement>('#art-full');
+  const caption = document.querySelector<HTMLElement>('#art-caption');
+  const counter = document.querySelector<HTMLElement>('#art-counter');
+  let current = 0;
+  let opener: HTMLButtonElement | null = null;
+  function display(index: number) {
+    current = (index + tiles.length) % tiles.length;
+    const thumb = tiles[current];
+    const img = thumb?.querySelector('img');
+    if (!thumb || !img || !full || !caption || !counter) return;
+    full.src = thumb.dataset.fullSrc || img.src;
+    full.alt = img.alt;
+    caption.textContent = img.alt;
+    counter.textContent = `${current+1} / ${tiles.length}`;
+  }
+  tiles.forEach((tile, index) => tile.addEventListener('click', () => {
+    opener = tile;
+    display(index);
+    dialog?.showModal();
+  }));
+  dialog?.addEventListener('close', () => opener?.focus());
+  dialog?.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+  document.querySelector('#art-close')?.addEventListener('click', () => dialog?.close());
+  document.querySelector('#viewer-prev')?.addEventListener('click', () => display(current-1));
+  document.querySelector('#viewer-next')?.addEventListener('click', () => display(current+1));
+  dialog?.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') display(current-1);
+    if (event.key === 'ArrowRight') display(current+1);
+  });
+  document.querySelector('#art-prev')?.addEventListener('click', () => track?.scrollBy({left: -Math.min(track.clientWidth*.8, 700), behavior: 'smooth'}));
+  document.querySelector('#art-next')?.addEventListener('click', () => track?.scrollBy({left: Math.min(track.clientWidth*.8, 700), behavior: 'smooth'}));
+</script>
