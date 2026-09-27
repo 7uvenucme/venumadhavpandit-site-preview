@@ -94,7 +94,7 @@ export default defineConfig({
               { type: "string", name: "month", label: "Month (YYYY-MM)", required: true, ui: { validate: (value: string) => /^(19|20)\d{2}-(0[1-9]|1[0-2])$/.test(value || "") ? undefined : "Use YYYY-MM, for example 2026-09." } },
               requiredText("text", "Update text", { component: "textarea" }),
               { type: "string", name: "link", label: "Link (optional)" },
-              { type: "string", name: "linkLabel", label: "Button text (optional, e.g. Say hi)" },
+              { type: "string", name: "linkLabel", label: "Link description (optional, e.g. Say hi)" },
               { type: "image", name: "image", label: "Image (optional)" },
               { type: "string", name: "imageAlt", label: "Image description" },
               { type: "string", name: "videoUrl", label: "Video file URL (optional, direct .mp4/.webm)" },

@@ -23,6 +23,8 @@ shippedUpdates:
     linkLabel: "Go test-drive"
   - month: "2026-07"
     text: "Voice Chat just went live on the mahindraelectricsuv.com. Check it out"
+    link: "https://www.mahindraelectricsuv.com"
+    linkLabel: "Visit mahindraelectricsuv.com"
 artworkTitle: "Recent artwork"
 artworks:
   - image: "/images/artwork/artwork-01.webp"
@@ -52,12 +54,12 @@ artworks:
   - image: "/images/artwork/artwork-09.webp"
     thumbnail: "/images/artwork/artwork-09-thumb.webp"
     alt: "Pastel pink staircase tower standing over water"
-readingTitle: "Currently reading"
+readingTitle: "Reading List"
 bookTitle: "The Almanack of Naval Ravikant"
 bookCover: "/images/naval-almanack.webp"
 bookCoverAlt: "Cover of The Almanack of Naval Ravikant"
 bookQuote: "Capital and labour are permissioned leverage. Code and media are permissionless leverage."
-hobbiesTitle: "Current interests"
+hobbiesTitle: "Current Obsessions"
 hobbies:
   - name: "Rubik's Cube"
     detail: "Trying to get to sub 1-min solves"
@@ -77,7 +79,7 @@ hobbies:
   - name: "Music"
     detail: "Constantly shuffling back and forth between the guitar and the keyboard"
     icon: music
-playlistTitle: "My current playlist"
+playlistTitle: "Soundtrack"
 playlistUrl: "https://open.spotify.com/playlist/58zFYzZ4afCPKGvBYn8NiV?si=74564b1e96ee4b9b"
 toolsTitle: "Tools I use"
 tools:
