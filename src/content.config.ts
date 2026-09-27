@@ -10,6 +10,7 @@ const builds = defineCollection({
     year: z.number().optional(),
     featured: z.boolean().default(false),
     image: z.string().optional(),
+    cardImage: z.string().optional(),
     imageAlt: z.string().optional(),
     imageCredit: z.string().optional(),
   }),

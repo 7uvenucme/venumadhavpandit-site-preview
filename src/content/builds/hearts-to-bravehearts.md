@@ -5,6 +5,7 @@ summary: A 10,000+ km journey across India to mark 25 years of Kargil Vijay Diwa
 year: 2024
 featured: true
 image: /images/hearts-to-bravehearts.jpg
+cardImage: /images/hearts-card.jpg
 imageAlt: People at the Kargil War Memorial in Dras, with Tololing Peak behind them and two Mahindra SUVs nearby
 imageCredit: Image carried over from Venumadhav's existing website.
 ---
