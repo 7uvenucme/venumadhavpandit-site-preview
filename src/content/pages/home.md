@@ -1,104 +1,105 @@
 ---
-title: "Venumadhav Pandit: Marketing, Brand, Digital, Technology Professional"
-description: "Venumadhav Pandit is a Mumbai-based marketer with expertise in digital products, campaigns and content."
-heroEyebrow: "Marketing × making · Mumbai, India"
-heroTitle: "Ideas I make <em>real.</em>"
-heroIntro: "I'm Venumadhav Pandit. I work across brand, content and digital, and I build things worth sharing. This is where the projects live."
-heroButtonLabel: "Explore my builds"
-heroImage: "/images/flying-chairs.webp"
-heroImageAlt: "A green chair stands still while orange chairs fly around it, artwork by Venumadhav Pandit"
-heroImageCaption: "Artwork by Venumadhav Pandit"
-sectionEyebrow: "Selected work"
-sectionTitle: "Recent builds"
-sectionLinkLabel: "All builds"
-shippedTitle: "Shipped"
+title: 'Venumadhav Pandit: Marketing, Brand, Digital, Technology Professional'
+description: 'Venumadhav Pandit is a Mumbai-based marketer with expertise in digital products, campaigns and content.'
+heroEyebrow: 'Marketing × making · Mumbai, India'
+heroTitle: Ideas I make <em>real.</em>
+heroIntro: 'I''m Venumadhav Pandit. I work across brand, content and digital, and I build things worth sharing. This is where the projects live.'
+heroButtonLabel: Explore my builds
+heroImage: /images/flying-chairs.webp
+heroImageAlt: 'A green chair stands still while orange chairs fly around it, artwork by Venumadhav Pandit'
+heroImageCaption: Artwork by Venumadhav Pandit
+sectionEyebrow: Selected work
+sectionTitle: Recent builds (Not AI)
+sectionLinkLabel: All builds
+shippedTitle: Shipped
 shippedUpdates:
-  - month: "2026-09"
-    text: "MEAL's self-serve WhatsApp bot went live. Say hi."
-    link: "https://wa.link/uxibxn"
-    linkLabel: "Say hi"
-  - month: "2026-08"
-    text: "BE 6 SPORTEQ launched. Go test-drive."
-    link: "https://www.mahindraelectricsuv.com/enquiry-form.html"
-    linkLabel: "Go test-drive"
-  - month: "2026-07"
-    text: "Voice Chat just went live on the mahindraelectricsuv.com. Check it out"
-    link: "https://www.mahindraelectricsuv.com"
-    linkLabel: "Visit mahindraelectricsuv.com"
-artworkTitle: "Recent artwork"
+  - month: 2026-09
+    text: MEAL's self-serve WhatsApp bot went live. Say hi.
+    link: 'https://wa.link/uxibxn'
+    linkLabel: Say hi
+  - month: 2026-08
+    text: BE 6 SPORTEQ launched. Go test-drive.
+    link: 'https://www.mahindraelectricsuv.com/enquiry-form.html'
+    linkLabel: Go test-drive
+  - month: 2026-07
+    text: Voice Chat just went live on the mahindraelectricsuv.com. Check it out
+    link: 'https://www.mahindraelectricsuv.com'
+    linkLabel: Visit mahindraelectricsuv.com
+artworkTitle: Recent artwork
 artworks:
-  - image: "/images/artwork/artwork-01.webp"
-    thumbnail: "/images/artwork/artwork-01-thumb.webp"
-    alt: "Terracotta vessels and charcoal bowls arranged in a minimalist still life"
-  - image: "/images/artwork/artwork-02.webp"
-    thumbnail: "/images/artwork/artwork-02-thumb.webp"
-    alt: "Ceramic vases, fruit bowl and candle arranged on a white plinth"
-  - image: "/images/artwork/artwork-03.webp"
-    thumbnail: "/images/artwork/artwork-03-thumb.webp"
-    alt: "Sculptural stone chairs against a warm arched backdrop"
-  - image: "/images/artwork/artwork-04.webp"
-    thumbnail: "/images/artwork/artwork-04-thumb.webp"
-    alt: "A white cloud drifts through a deep blue room with a window"
-  - image: "/images/artwork/artwork-05.webp"
-    thumbnail: "/images/artwork/artwork-05-thumb.webp"
-    alt: "Sunlit yellow stairs glimpsed through a narrow opening in a pink wall"
-  - image: "/images/artwork/artwork-06.webp"
-    thumbnail: "/images/artwork/artwork-06-thumb.webp"
-    alt: "Nested colorful doorways opening onto a sandy interior"
-  - image: "/images/artwork/artwork-07.webp"
-    thumbnail: "/images/artwork/artwork-07-thumb.webp"
-    alt: "Geometric white building silhouetted against a pink-blue sky"
-  - image: "/images/artwork/artwork-08.webp"
-    thumbnail: "/images/artwork/artwork-08-thumb.webp"
-    alt: "Yellow lounge chair beside a pool in an airy interior"
-  - image: "/images/artwork/artwork-09.webp"
-    thumbnail: "/images/artwork/artwork-09-thumb.webp"
-    alt: "Pastel pink staircase tower standing over water"
-readingTitle: "Reading List"
-bookTitle: "The Almanack of Naval Ravikant"
-bookCover: "/images/naval-almanack.webp"
-bookCoverAlt: "Cover of The Almanack of Naval Ravikant"
-bookQuote: "Capital and labour are permissioned leverage. Code and media are permissionless leverage."
-hobbiesTitle: "Current Obsessions"
+  - image: /images/artwork/artwork-01.webp
+    thumbnail: /images/artwork/artwork-01-thumb.webp
+    alt: Terracotta vessels and charcoal bowls arranged in a minimalist still life
+  - image: /images/artwork/artwork-02.webp
+    thumbnail: /images/artwork/artwork-02-thumb.webp
+    alt: 'Ceramic vases, fruit bowl and candle arranged on a white plinth'
+  - image: /images/artwork/artwork-03.webp
+    thumbnail: /images/artwork/artwork-03-thumb.webp
+    alt: Sculptural stone chairs against a warm arched backdrop
+  - image: /images/artwork/artwork-04.webp
+    thumbnail: /images/artwork/artwork-04-thumb.webp
+    alt: A white cloud drifts through a deep blue room with a window
+  - image: /images/artwork/artwork-05.webp
+    thumbnail: /images/artwork/artwork-05-thumb.webp
+    alt: Sunlit yellow stairs glimpsed through a narrow opening in a pink wall
+  - image: /images/artwork/artwork-06.webp
+    thumbnail: /images/artwork/artwork-06-thumb.webp
+    alt: Nested colorful doorways opening onto a sandy interior
+  - image: /images/artwork/artwork-07.webp
+    thumbnail: /images/artwork/artwork-07-thumb.webp
+    alt: Geometric white building silhouetted against a pink-blue sky
+  - image: /images/artwork/artwork-08.webp
+    thumbnail: /images/artwork/artwork-08-thumb.webp
+    alt: Yellow lounge chair beside a pool in an airy interior
+  - image: /images/artwork/artwork-09.webp
+    thumbnail: /images/artwork/artwork-09-thumb.webp
+    alt: Pastel pink staircase tower standing over water
+readingTitle: Reading List
+bookTitle: The Almanack of Naval Ravikant
+bookCover: /images/naval-almanack.webp
+bookCoverAlt: Cover of The Almanack of Naval Ravikant
+bookQuote: Capital and labour are permissioned leverage. Code and media are permissionless leverage.
+hobbiesTitle: Current Obsessions
 hobbies:
-  - name: "Rubik's Cube"
-    detail: "Trying to get to sub 1-min solves"
+  - name: Rubik's Cube
+    detail: Trying to get to sub 1-min solves
     icon: cube
-  - name: "Fitness"
-    detail: "Goal is to get to 2-min deadhangs"
+  - name: Fitness
+    detail: Goal is to get to 2-min deadhangs
     icon: dumbbell
-  - name: "Mechanical Keyboards"
-    detail: "Still searching for that perfect, creamy sound profile"
+  - name: Mechanical Keyboards
+    detail: 'Still searching for that perfect, creamy sound profile'
     icon: keyboard
-  - name: "Learning Japanese"
-    detail: "Keeping the momentum alive with a 400+ day streak!"
+  - name: Learning Japanese
+    detail: Keeping the momentum alive with a 400+ day streak!
     icon: book
-  - name: "Sketching"
-    detail: "Lately, I've been spending a lot of time sketching cars and spaceships"
+  - name: Sketching
+    detail: 'Lately, I''ve been spending a lot of time sketching cars and spaceships'
     icon: pencil
-  - name: "Music"
-    detail: "Constantly shuffling back and forth between the guitar and the keyboard"
+  - name: Music
+    detail: Constantly shuffling back and forth between the guitar and the keyboard
     icon: music
-playlistTitle: "Soundtrack"
-playlistUrl: "https://open.spotify.com/playlist/58zFYzZ4afCPKGvBYn8NiV?si=74564b1e96ee4b9b"
-toolsTitle: "Tools I use"
+playlistTitle: Soundtrack
+playlistUrl: 'https://open.spotify.com/playlist/58zFYzZ4afCPKGvBYn8NiV?si=74564b1e96ee4b9b'
+toolsTitle: Tools I use
 tools:
-  - category: "Database"
-    tool: "Supabase"
-  - category: "Version Control"
-    tool: "Github"
-  - category: "Code Editor"
-    tool: "VS Code"
-  - category: "Workflow Management"
-    tool: "Notion"
-  - category: "Cloud Deployment"
-    tool: "Vercel"
-  - category: "CMS"
-    tool: "Tina"
-  - category: "Domain registry"
-    tool: "GoDaddy"
-  - category: "Frontend"
-    tool: "HTML CSS js"
-  - category: "3D renders"
-    tool: "Blender"
+  - category: Database
+    tool: Supabase
+  - category: Version Control
+    tool: Github
+  - category: Code Editor
+    tool: VS Code
+  - category: Workflow Management
+    tool: Notion
+  - category: Cloud Deployment
+    tool: Vercel
+  - category: CMS
+    tool: Tina
+  - category: Domain registry
+    tool: GoDaddy
+  - category: Frontend
+    tool: HTML CSS js
+  - category: 3D renders
+    tool: Blender
 ---
+
