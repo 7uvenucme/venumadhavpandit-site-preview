@@ -7,4 +7,5 @@ export default defineConfig({
   base: cutover ? '/' : '/venumadhavpandit-site-preview',
   output: 'static',
   trailingSlash: 'always',
+  build: { inlineStylesheets: 'always' },
 });

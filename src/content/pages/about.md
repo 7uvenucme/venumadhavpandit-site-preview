@@ -4,7 +4,7 @@ description: "About Venumadhav Pandit: Mahindra eSUVs marketing leader in Mumbai
 eyebrow: "About me"
 pageTitle: "Curious by default."
 lede: "I work at the intersection of marketing, creative ideas and technology. I like building teams and campaigns that solve a real problem and connect with people."
-figureImage: "/images/about-workspace.png"
+figureImage: "/images/about-workspace.webp"
 figureAlt: "Dreamy illustrated workspace with a desk, plants and a computer"
 figureCaption: "Artwork carried over from the previous site."
 experienceHeading: "Experience"

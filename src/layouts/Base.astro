@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
-interface Props { title: string; description: string; socialImage?: string; }
-const { title, description, socialImage = '/images/flying-chairs.png' } = Astro.props;
+interface Props { title: string; description: string; socialImage?: string; preloadImage?: string; }
+const { title, description, socialImage = '/images/flying-chairs.png', preloadImage } = Astro.props;
 const cutover = import.meta.env.SITE_TARGET === 'cutover';
 const enableAnalytics = cutover;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
@@ -16,5 +16,6 @@ const nav = [{label:'Home',path:'/'},{label:'Builds',path:'/builds/'},{label:'Ab
 <meta property="og:type" content="website"/><meta property="og:site_name" content="Venumadhav Pandit"/><meta property="og:title" content={`${title} | Venumadhav Pandit`}/><meta property="og:description" content={description}/><meta property="og:url" content={canonical}/><meta property="og:image" content={image}/><meta property="og:image:alt" content="Artwork and projects by Venumadhav Pandit"/>
 <meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content={`${title} | Venumadhav Pandit`}/><meta name="twitter:description" content={description}/><meta name="twitter:image" content={image}/>
 {enableAnalytics && <><script async src="https://www.googletagmanager.com/gtag/js?id=G-96HHXK5W0K"></script><script is:inline>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-96HHXK5W0K');</script></>}
+{preloadImage && <link rel="preload" as="image" href={href(preloadImage)}/>}
 <link rel="icon" href={href('/favicon.svg')} type="image/svg+xml"/></head>
 <body><a class="skip" href="#main">Skip to content</a><header class="site-header"><nav class="container nav" aria-label="Main navigation"><a href={href('/')} class="brand"><img class="brand-mark" src={href('/images/vp-logo-crop.png')} alt=""/><span class="brand-name">Venumadhav Pandit</span></a><div class="nav-links">{nav.map(item => <a href={href(item.path)} class:list={{active: Astro.url.pathname === href(item.path)}}>{item.label}</a>)}</div></nav></header><main id="main"><slot/></main><footer class="footer"><div class="container footer-inner"><span>© {new Date().getFullYear()} Venumadhav Pandit</span><div class="split-links"><a href="mailto:7uvenucme@gmail.com">Email</a><a href="https://www.linkedin.com/in/venumadhav-pandit/" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href={href('/mfan-2026/#privacy')}>MFan privacy</a></div></div></footer></body></html>
