@@ -1,4 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import { getEntry } from 'astro:content';
+const d = (await getEntry('pages', 'contact'))!.data;
 ---
-<Base title="Contact" description="Get in touch with Venumadhav Pandit in Mumbai about marketing, creative campaigns and digital projects."><div class="container page-intro"><span class="eyebrow">Get in touch</span><h1 class="page-title">Let's talk.</h1><p class="lede">Have a project, a question or an idea? You can reach me by email.</p><a class="button" href="mailto:7uvenucme@gmail.com">7uvenucme@gmail.com ↗</a></div><div class="container content"><p>Or find me on <a href="https://www.linkedin.com/in/venumadhav-pandit/" target="_blank" rel="noopener noreferrer">LinkedIn</a>.</p></div></Base>
+<Base title={d.title} description={d.description}><div class="container page-intro"><span class="eyebrow">{d.eyebrow}</span><h1 class="page-title">{d.pageTitle}</h1><p class="lede">{d.lede}</p><a class="button" href={`mailto:${d.email}`}>{d.email} ↗</a></div><div class="container content"><p>Or find me on <a href={d.linkedinUrl} target="_blank" rel="noopener noreferrer">{d.linkedinLabel}</a>.</p></div></Base>
