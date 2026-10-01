@@ -4,7 +4,16 @@ import '../styles/loan-calculator.css';
 const base=import.meta.env.BASE_URL.replace(/\/$/,'');
 const canonical=new URL(`${base}/home-loan-calculator/`,Astro.site).href;
 const image=new URL(`${base}/images/home-loan-calculator-share.png`,Astro.site).href;
-const title='Home loan prepayment calculator: tenure & interest savings';
-const description='Calculate how extra EMIs, yearly bonuses, EMI step-ups and lump sums reduce home loan tenure and interest. Set a debt-free goal to find your yearly prepayment.';
+const title='Free Home Loan Prepayment Calculator | No Login';
+const description='Free home loan EMI and prepayment calculator. Compare interest savings, loan tenure and extra payments. No login or phone number required. Download your schedule.';
+const schema={
+  '@context':'https://schema.org', '@type':'WebApplication',
+  name:'Free home loan prepayment calculator', url:canonical, description,
+  applicationCategory:'FinanceApplication', operatingSystem:'Any', browserRequirements:'Requires JavaScript',
+  isAccessibleForFree:true, inLanguage:'en-IN',
+  offers:{'@type':'Offer',price:0,priceCurrency:'INR'},
+  featureList:['Home loan EMI calculation','Prepayment interest and tenure comparison','Monthly top-ups, annual extra EMIs, EMI step-ups and lump sums','Debt-free goal planner','CSV amortisation schedule download'],
+  creator:{'@type':'Person',name:'Venumadhav Pandit',url:new URL(base+'/',Astro.site).href}
+};
 ---
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>{title}</title><meta name="description" content={description}/><link rel="canonical" href={canonical}/><meta name="theme-color" content="#f8f8f4"/><meta property="og:type" content="website"/><meta property="og:site_name" content="Venumadhav Pandit"/><meta property="og:title" content={title}/><meta property="og:description" content={description}/><meta property="og:url" content={canonical}/><meta property="og:image" content={image}/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image:alt" content="Home loan prepayment calculator - a little extra, a lot less loan"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content={title}/><meta name="twitter:description" content={description}/><meta name="twitter:image" content={image}/></head><body style="margin:0"><div id="calculator" set:html={markup}></div><script>import {mount} from '../scripts/interactive.mjs';mount(document.querySelector('#calculator'));</script></body></html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>{title}</title><meta name="description" content={description}/><link rel="canonical" href={canonical}/><meta name="theme-color" content="#f8f8f4"/><meta property="og:type" content="website"/><meta property="og:site_name" content="Venumadhav Pandit"/><meta property="og:title" content={title}/><meta property="og:description" content={description}/><meta property="og:url" content={canonical}/><meta property="og:image" content={image}/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image:alt" content="Home loan prepayment calculator - a little extra, a lot less loan"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content={title}/><meta name="twitter:description" content={description}/><meta name="twitter:image" content={image}/><script type="application/ld+json" set:html={JSON.stringify(schema)}/></head><body style="margin:0"><div id="calculator" set:html={markup}></div><script>import {mount} from '../scripts/interactive.mjs';mount(document.querySelector('#calculator'));</script></body></html>
