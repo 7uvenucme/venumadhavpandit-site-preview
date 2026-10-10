@@ -13,6 +13,7 @@ const builds = defineCollection({
     cardImage: z.string().optional(),
     imageAlt: z.string().optional(),
     imageCredit: z.string().optional(),
+    socialImage: z.string().optional(),
   }),
 });
 

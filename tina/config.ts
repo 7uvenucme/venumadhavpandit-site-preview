@@ -63,6 +63,7 @@ export default defineConfig({
           { type: "number", name: "year", label: "Year" },
           { type: "boolean", name: "featured", label: "Show on homepage" },
           { type: "image", name: "cardImage", label: "Card image (grid thumbnail)" },
+          { type: "image", name: "socialImage", label: "Social share image (optional, 1200x675)" },
           requiredImage("image", "Main image (top of project page)"),
           { type: "string", name: "imageAlt", label: "Image alt text" },
           { type: "string", name: "imageCredit", label: "Image credit" },
