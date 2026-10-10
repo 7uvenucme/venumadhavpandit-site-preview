@@ -17,6 +17,7 @@ import Base from '../layouts/Base.astro';
       <p class="lk-note">Nothing is saved. Refresh and it starts fresh.</p>
     </div>
     <div id="lk-play" hidden>
+      <p id="lk-challenge-note" class="lk-challenge-note" hidden>Same 20 questions. Beat their score!</p>
       <div class="lk-top"><div class="lk-stat"><small>Score</small><span id="lk-score">0</span></div><div class="lk-stat lk-r"><small>Time left</small><span id="lk-time">60s</span></div></div>
       <div class="lk-bar"><i id="lk-bar-fill"></i></div>
       <div id="lk-glyph" class="lk-glyph" lang="kn">ಅ</div>
@@ -26,7 +27,19 @@ import Base from '../layouts/Base.astro';
       <p class="lk-sub">Time</p>
       <div id="lk-final" class="lk-final">0</div>
       <p id="lk-summary" class="lk-sub"></p>
+      <p id="lk-comparison" class="lk-comparison" hidden></p>
       <div id="lk-missed" class="lk-missed"></div>
+      <div id="lk-share" class="lk-share" aria-label="Challenge a friend">
+        <p class="lk-share-title">Challenge a friend</p>
+        <div class="lk-share-actions">
+          <button class="lk-share-btn" id="lk-native-share" type="button" hidden><span aria-hidden="true">↗</span><span>Share</span></button>
+          <a class="lk-share-btn lk-share-link" id="lk-share-whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11.8 11.8 0 0 0 2 17.7L.5 23.5l6-1.6A11.8 11.8 0 0 0 23.2 11a11.8 11.8 0 0 0-2.7-7.5ZM12 21a9.8 9.8 0 0 1-5-1.4l-.4-.2-3.6 1 1-3.5-.3-.4A9.8 9.8 0 1 1 12 21Zm5.4-7.4c-.3-.2-1.7-.9-2-.9-.2-.1-.4-.2-.6.2-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-.3-.2-1.2-.4-2.3-1.4-.8-.7-1.4-1.6-1.6-1.9-.2-.3 0-.4.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.1c-.2-.5-.5-.4-.6-.4h-.5c-.2 0-.5.1-.7.4-.3.3-1 1-1 2.4s1 2.7 1.1 2.9c.1.2 2 3.1 4.8 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.6-.4Z"/></svg><span>WhatsApp</span></a>
+          <a class="lk-share-btn lk-share-link" id="lk-share-x" target="_blank" rel="noopener noreferrer" aria-label="Share on X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3L12 14.6 5.6 22H2.4l7.3-8.4L1.8 2h6.4l4.5 6.8L18.9 2Zm-1.1 18h1.7L7.3 3.9H5.5L17.8 20Z"/></svg><span>X</span></a>
+          <a class="lk-share-btn lk-share-link" id="lk-share-linkedin" target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 2H3.6A1.6 1.6 0 0 0 2 3.6v16.8A1.6 1.6 0 0 0 3.6 22h16.8a1.6 1.6 0 0 0 1.6-1.6V3.6A1.6 1.6 0 0 0 20.4 2ZM8 18H5V9h3v9ZM6.5 7.8A1.8 1.8 0 1 1 6.5 4a1.8 1.8 0 0 1 0 3.8ZM19 18h-3v-4.4c0-1.1 0-2.4-1.5-2.4s-1.7 1.2-1.7 2.3V18h-3V9h2.9v1.2h.1A3.2 3.2 0 0 1 15.7 9C18.8 9 19 11 19 13.6V18Z"/></svg><span>LinkedIn</span></a>
+          <a class="lk-share-btn lk-share-link" id="lk-share-facebook" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.4 22v-9h3l.5-3.5h-3.5V7.3c0-1 .3-1.7 1.8-1.7H17V2.5c-.3 0-1.4-.1-2.7-.1-2.7 0-4.6 1.6-4.6 4.7v2.4H6.6V13h3.1v9h3.7Z"/></svg><span>Facebook</span></a>
+          <button class="lk-share-btn" id="lk-copy-link" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.1 0l3-3A5 5 0 0 0 13 2.9l-1.7 1.7 1.4 1.4 1.7-1.7a3 3 0 0 1 4.2 4.2l-3 3a3 3 0 0 1-4.2 0l-.7-.7-1.4 1.4.7.8ZM14 11a5 5 0 0 0-7.1 0l-3 3A5 5 0 0 0 11 21.1l1.7-1.7-1.4-1.4-1.7 1.7a3 3 0 0 1-4.2-4.2l3-3a3 3 0 0 1 4.2 0l.7.7 1.4-1.4-.7-.8Z"/></svg><span id="lk-copy-label">Copy link</span></button>
+        </div>
+      </div>
       <button class="lk-btn" id="lk-again" type="button">Play again</button>
     </div>
   </div>
@@ -73,6 +86,8 @@ import Base from '../layouts/Base.astro';
 .lk-missed{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px}
 .lk-chip{background:#fff;border:1px solid #e4e6d6;border-radius:12px;padding:8px 12px;font-size:15px}
 .lk-chip b{font-size:22px;margin-right:6px}
+.lk-challenge-note{margin:0 0 10px;color:#945013;font-size:14px;font-weight:700}.lk-comparison{margin:0 0 20px;padding:12px 14px;background:#f1f6dc;border:1px solid #dfe3cc;border-radius:14px;color:#425018;font-weight:700;font-size:16px}.lk-share{margin:0 0 22px;padding:16px;background:rgba(255,255,255,.65);border:1px solid #e4e6d6;border-radius:18px}.lk-share-title{font-size:15px;font-weight:700;color:#19252b;margin:0 0 12px}.lk-share-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.lk-share-btn{display:flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:8px 6px;border:1px solid #dfe3cc;border-radius:12px;background:#fff;color:#425018;text-decoration:none;font:inherit;font-size:13px;font-weight:700;cursor:pointer}.lk-share-btn:hover{background:#f1f6dc;border-color:#6b7a2a}.lk-share-btn svg{width:18px;height:18px;fill:currentColor;flex:none}
+@media(max-width:420px){.lk-share-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.lk-share-btn{gap:6px;padding:8px 4px;font-size:12px}}
 </style>
 <script>
 // Content is data. To add a level later (two-letter sounds, common words),
@@ -132,6 +147,24 @@ let missed = new Map<string, Item>();
 const shuffle = <T,>(a: T[]) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const makeRound = (items: Item[]): Item[] => items.length >= 20 ? shuffle(items).slice(0, 20) : shuffle(Array.from({ length: 20 }, (_, i) => items[i % items.length]));
 let round: Item[] = []; let roundIndex = 0;
+function readChallenge(): { level: Level; score: number; questions: Item[] } | null {
+  try {
+    const raw = new URLSearchParams(location.search).get('challenge');
+    if (!raw || !/^[A-Za-z0-9_-]{1,300}$/.test(raw)) return null;
+    const binary = atob(raw.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - raw.length % 4) % 4));
+    const data = JSON.parse(binary);
+    if (!Array.isArray(data) || data.length !== 22) return null;
+    const challengeLevel = LEVELS.find(candidate => candidate.id === data[0]);
+    const challengeScore = data[1];
+    if (!challengeLevel || !Number.isInteger(challengeScore) || challengeScore < 0 || challengeScore > 20) return null;
+    const items = challengeLevel.groups.flatMap(group => group.items);
+    const questions: Item[] = data.slice(2).map(index => Number.isInteger(index) && index >= 0 && index < items.length ? items[index] : null).filter((item): item is Item => item !== null);
+    if (questions.length !== 20) return null;
+    return { level: challengeLevel, score: challengeScore, questions };
+  } catch { return null; }
+}
+let challengeToPlay = readChallenge();
+let challengerScore: number | null = challengeToPlay?.score ?? null;
 function setLevel(next: Level) {
   level = next; ALL = level.groups.flatMap(g => g.items); pool = ALL;
   sel = new Set(selectionKeys(level)); renderLevels();
@@ -201,9 +234,17 @@ function tick() {
   if (left <= 0) end();
 }
 function start() {
-  if (sel.size < 4) { $('lk-need').hidden = false; return; }
-  pool = selectedItems();
-  round = makeRound(pool); roundIndex = 0;
+  if (challengeToPlay) {
+    level = challengeToPlay.level; ALL = level.groups.flatMap(g => g.items); pool = ALL;
+    round = challengeToPlay.questions.slice(); challengeToPlay = null;
+    sel = new Set(selectionKeys(level)); renderLevels();
+    $('lk-challenge-note').hidden = false;
+  } else {
+    if (sel.size < 4) { $('lk-need').hidden = false; return; }
+    pool = selectedItems(); round = makeRound(pool);
+    $('lk-challenge-note').hidden = true;
+  }
+  roundIndex = 0;
   score = 0; asked = 0; left = DURATION; missed = new Map();
   $('lk-score').textContent = '0'; $('lk-time').textContent = DURATION + 's';
   ($('lk-bar-fill') as HTMLElement).style.width = '100%';
@@ -213,11 +254,34 @@ function end() {
   clearInterval(timer); locked = true;
   $('lk-final').textContent = String(score);
   $('lk-summary').textContent = `${score} right out of 20.`;
+  const comparison = $('lk-comparison');
+  if (challengerScore !== null) {
+    comparison.innerHTML = `You: ${score}/20<br>Challenger: ${challengerScore}/20`;
+    comparison.hidden = false;
+  } else comparison.hidden = true;
+  const shareText = `I scored ${score}/20 on the Learn to read Kannada app - beat me`;
+  const challengeIndexes = round.map(item => ALL.findIndex(candidate => candidate.k === item.k && candidate.r === item.r));
+  const challengePayload = btoa(JSON.stringify([level.id, score, ...challengeIndexes])).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+  const challengeUrl = new URL('https://www.venumadhavpandit.com/learn-kannada/');
+  challengeUrl.searchParams.set('challenge', challengePayload);
+  const shareUrl = challengeUrl.toString();
+  const shareData = { title:'Learn to read Kannada - challenge', text:`${shareText}\n${shareUrl}`, url:shareUrl };
+  const shareParam = encodeURIComponent(`${shareText} ${shareUrl}`);
+  ($('lk-share-whatsapp') as HTMLAnchorElement).href = `https://wa.me/?text=${shareParam}`;
+  ($('lk-share-x') as HTMLAnchorElement).href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+  ($('lk-share-linkedin') as HTMLAnchorElement).href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+  ($('lk-share-facebook') as HTMLAnchorElement).href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+  const nativeShare = $('lk-native-share') as HTMLButtonElement;
+  nativeShare.hidden = !('share' in navigator);
+  nativeShare.onclick = async () => { try { await navigator.share(shareData); } catch (err) { if ((err as DOMException).name !== 'AbortError') console.error(err); } };
+  $('lk-copy-label').textContent = 'Copy link';
+  ($('lk-copy-link') as HTMLButtonElement).onclick = async () => { try { await navigator.clipboard.writeText(shareUrl); $('lk-copy-label').textContent = 'Copied!'; setTimeout(() => { $('lk-copy-label').textContent = 'Copy link'; }, 1800); } catch { window.prompt('Copy this link:', shareUrl); } };
   const m = $('lk-missed'); m.innerHTML = '';
   missed.forEach(i => { const c = document.createElement('span'); c.className = 'lk-chip'; c.innerHTML = `<b lang="kn">${i.k}</b>${i.r}`; m.appendChild(c); });
   show('lk-end');
 }
 $('lk-all').onclick = () => { selectionKeys(level).forEach(k => sel.add(k)); renderLevels(); }; $('lk-none').onclick = () => { sel.clear(); renderLevels(); };
-$('lk-go').onclick = start; $('lk-again').onclick = () => { show('lk-start'); renderLevels(); };
+$('lk-go').onclick = start; $('lk-again').onclick = () => { challengerScore = null; challengeToPlay = null; $('lk-challenge-note').hidden = true; history.replaceState(null, '', location.pathname); show('lk-start'); renderLevels(); };
 renderLevels();
+if (challengeToPlay) start();
 </script>
