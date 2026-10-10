@@ -90,6 +90,8 @@ const DURATION = 60;
 const level = LEVELS[0]; const ALL = level.groups.flatMap(g => g.items); let pool: Item[] = ALL; const sel = new Set<string>(ALL.map(i => i.k)); let score = 0, asked = 0, left = DURATION, timer: number | undefined, cur: Item, locked = false;
 let missed = new Map<string, Item>();
 const shuffle = <T,>(a: T[]) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const makeRound = (items: Item[]): Item[] => items.length >= 20 ? shuffle(items).slice(0, 20) : shuffle(Array.from({ length: 20 }, (_, i) => items[i % items.length]));
+let round: Item[] = []; let roundIndex = 0;
 function renderLevels() {
   const box = $('lk-levels'); box.innerHTML = '';
   level.groups.forEach(g => {
@@ -110,8 +112,7 @@ function renderLevels() {
 function show(id: string) { ['lk-start','lk-play','lk-end'].forEach(x => ($(x).hidden = x !== id)); }
 function next() {
   locked = false;
-  let n; do { n = pool[Math.floor(Math.random() * pool.length)]; } while (n === cur && pool.length > 1);
-  cur = n;
+  cur = round[roundIndex++];
   const wrong = shuffle(pool.filter(i => i.r !== cur.r)).slice(0, 3);
   $('lk-glyph').textContent = cur.k;
   const box = $('lk-opts'); box.innerHTML = '';
@@ -125,7 +126,7 @@ function pick(btn: HTMLElement, o: Item) {
   if (o.r === cur.r) { score++; btn.classList.add('ok'); }
   else { btn.classList.add('bad'); missed.set(cur.k, cur); [...$('lk-opts').children].forEach(c => { if (c.textContent === cur.r) c.classList.add('ok'); }); }
   $('lk-score').textContent = String(score);
-  setTimeout(() => { if (left > 0) next(); }, o.r === cur.r ? 250 : 800);
+  setTimeout(() => { if (left > 0) { if (asked >= 20) end(); else next(); } }, o.r === cur.r ? 250 : 800);
 }
 function tick() {
   left--; $('lk-time').textContent = Math.max(left, 0) + 's';
@@ -135,6 +136,7 @@ function tick() {
 function start() {
   if (sel.size < 4) { $('lk-need').hidden = false; return; }
   pool = ALL.filter(i => sel.has(i.k));
+  round = makeRound(pool); roundIndex = 0;
   score = 0; asked = 0; left = DURATION; missed = new Map();
   $('lk-score').textContent = '0'; $('lk-time').textContent = DURATION + 's';
   ($('lk-bar-fill') as HTMLElement).style.width = '100%';
@@ -143,7 +145,7 @@ function start() {
 function end() {
   clearInterval(timer); locked = true;
   $('lk-final').textContent = String(score);
-  $('lk-summary').textContent = asked ? `${score} right out of ${asked}.` : 'No answers this time.';
+  $('lk-summary').textContent = `${score} right out of 20.`;
   const m = $('lk-missed'); m.innerHTML = '';
   missed.forEach(i => { const c = document.createElement('span'); c.className = 'lk-chip'; c.innerHTML = `<b lang="kn">${i.k}</b>${i.r}`; m.appendChild(c); });
   show('lk-end');
