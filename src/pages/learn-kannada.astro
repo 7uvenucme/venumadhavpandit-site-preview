@@ -1,0 +1,154 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Learn to read Kannada" description="A free one-minute game to learn the Kannada script. See a letter, pick its sound. No login, nothing stored.">
+<section class="lk container">
+  <p class="lk-eyebrow">Learn to read Kannada</p>
+  <div id="lk-app" class="lk-card" aria-live="polite">
+    <div id="lk-start">
+      <h1 class="lk-title">Read the script, one letter at a time.</h1>
+      <p class="lk-sub">Tap the letters you want to practice. Then you get 60 seconds to match each one to its sound.</p>
+      <div class="lk-tools"><button type="button" id="lk-all">Select all</button><button type="button" id="lk-none">Clear</button></div>
+      <div id="lk-levels" class="lk-levels"></div>
+      <button class="lk-btn" id="lk-go" type="button">Start</button>
+      <p class="lk-need" id="lk-need" hidden>Pick at least 4 letters.</p>
+      <p class="lk-note">Nothing is saved. Refresh and it starts fresh.</p>
+    </div>
+    <div id="lk-play" hidden>
+      <div class="lk-top"><div class="lk-stat"><small>Score</small><span id="lk-score">0</span></div><div class="lk-stat lk-r"><small>Time left</small><span id="lk-time">60s</span></div></div>
+      <div class="lk-bar"><i id="lk-bar-fill"></i></div>
+      <div id="lk-glyph" class="lk-glyph" lang="kn">ಅ</div>
+      <div id="lk-opts" class="lk-opts"></div>
+    </div>
+    <div id="lk-end" hidden>
+      <p class="lk-sub">Time</p>
+      <div id="lk-final" class="lk-final">0</div>
+      <p id="lk-summary" class="lk-sub"></p>
+      <div id="lk-missed" class="lk-missed"></div>
+      <button class="lk-btn" id="lk-again" type="button">Play again</button>
+    </div>
+  </div>
+</section>
+</Base>
+<style is:global>
+.lk{padding:40px 0 72px;max-width:560px}
+.lk-eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#945013;font-weight:700;margin:0 0 14px}
+.lk-card{background:linear-gradient(160deg,#fff 0%,#f1f3e4 60%,#f8e9db 100%);border:1px solid #e4e6d6;border-radius:28px;padding:28px 22px;box-shadow:0 18px 40px -24px rgba(60,70,20,.35);min-height:420px}
+.lk-title{font-size:clamp(28px,7vw,38px);line-height:1.1;letter-spacing:-.04em;margin:0 0 12px;color:#19252b}
+.lk-sub{color:#5a6663;font-size:17px;margin:0 0 22px}
+.lk-note{color:#7a8582;font-size:13px;margin:16px 0 0}
+.lk-levels{margin-bottom:20px}
+.lk-h{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#945013;font-weight:700;margin:16px 0 8px}
+.lk-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.lk-ch{display:flex;flex-direction:column;align-items:center;padding:10px 2px 8px;border-radius:14px;border:2px solid #dfe3cc;background:#fff;font:inherit;color:#19252b;cursor:pointer}
+.lk-ch b{font-size:30px;line-height:1.25;font-weight:500}
+.lk-ch small{font-size:13px;color:#6b7773}
+.lk-ch[aria-pressed=true]{border-color:#6b7a2a;background:#f1f6dc}
+.lk-ch[aria-pressed=false]{opacity:.55}
+.lk-tools{display:flex;gap:16px;margin-bottom:4px}
+.lk-tools button{background:none;border:0;padding:6px 0;font:inherit;font-size:14px;font-weight:600;color:#945013;cursor:pointer}
+.lk-need{color:#c2560f;font-size:14px;margin:10px 0 0}
+.lk-xlevel{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;padding:14px 16px;border-radius:16px;border:2px solid #dfe3cc;background:#fff;font:inherit;color:#19252b;cursor:pointer}
+.lk-level small{color:#6b7773;font-size:13px}
+.lk-level[aria-pressed=true]{border-color:#6b7a2a;background:#f4f7e6}
+.lk-level[disabled]{opacity:.5;cursor:default}
+.lk-btn{width:100%;padding:16px;border:0;border-radius:16px;background:#c2560f;color:#fff;font:inherit;font-weight:700;font-size:18px;cursor:pointer;min-height:54px}
+.lk-btn:hover{background:#a8480a}
+.lk-top{display:flex;justify-content:space-between;align-items:flex-end}.lk-stat{display:flex;flex-direction:column;line-height:1.1}.lk-stat small{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#6b7773;font-weight:600;margin-bottom:4px}.lk-stat span{font-weight:800;font-size:30px;letter-spacing:-.03em}.lk-r{align-items:flex-end}
+.lk-top #lk-score{color:#5d6b1f}.lk-top #lk-time{color:#c2560f;font-variant-numeric:tabular-nums}
+.lk-bar{height:6px;background:#e4e6d6;border-radius:6px;margin:10px 0 18px;overflow:hidden}
+.lk-bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#6b7a2a,#c2560f);transition:width 1s linear}
+.lk-glyph{font-size:clamp(110px,34vw,160px);line-height:1.2;text-align:center;color:#19252b;padding:8px 0 20px}
+.lk-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lk-opt{padding:18px 8px;border-radius:16px;border:2px solid #dfe3cc;background:#fff;font:inherit;font-size:22px;font-weight:600;color:#19252b;cursor:pointer;min-height:64px}
+.lk-opt.ok{background:#e4efc4;border-color:#6b7a2a}
+.lk-opt.bad{background:#f8d9c4;border-color:#c2560f}
+.lk-final{font-size:84px;font-weight:800;letter-spacing:-.05em;color:#5d6b1f;line-height:1;margin:6px 0 10px}
+.lk-missed{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px}
+.lk-chip{background:#fff;border:1px solid #e4e6d6;border-radius:12px;padding:8px 12px;font-size:15px}
+.lk-chip b{font-size:22px;margin-right:6px}
+</style>
+<script>
+// Content is data. To add a level later (two-letter sounds, common words),
+// push another object into LEVELS with the same shape. Nothing else changes.
+type Item = { k: string; r: string };
+type Group = { title: string; items: Item[] };
+type Level = { id: string; title: string; groups: Group[] };
+const v = (k: string, r: string): Item => ({ k, r });
+const LEVELS: Level[] = [
+  { id: 'letters', title: 'Letters', groups: [
+    { title: 'Vowels', items: [
+      v('ಅ','a'),v('ಆ','aa'),v('ಇ','i'),v('ಈ','ee'),v('ಉ','u'),v('ಊ','oo'),v('ಋ','ru'),
+      v('ಎ','e'),v('ಏ','ae'),v('ಐ','ai'),v('ಒ','o'),v('ಓ','oh'),v('ಔ','au'),v('ಅಂ','am') ] },
+    { title: 'Consonants', items: [
+      v('ಕ','ka'),v('ಗ','ga'),v('ಚ','cha'),v('ಜ','ja'),v('ತ','tha'),v('ದ','da'),
+      v('ನ','na'),v('ಪ','pa'),v('ಬ','ba'),v('ಮ','ma'),v('ರ','ra') ] } ] },
+  // Later: { id: 'syllables', ... } and { id: 'words', ... } with the same shape.
+];
+const $ = (id: string) => document.getElementById(id)!;
+const DURATION = 60;
+const level = LEVELS[0]; const ALL = level.groups.flatMap(g => g.items); let pool: Item[] = ALL; const sel = new Set<string>(ALL.map(i => i.k)); let score = 0, asked = 0, left = DURATION, timer: number | undefined, cur: Item, locked = false;
+let missed = new Map<string, Item>();
+const shuffle = <T,>(a: T[]) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function renderLevels() {
+  const box = $('lk-levels'); box.innerHTML = '';
+  level.groups.forEach(g => {
+    const h = document.createElement('div'); h.className = 'lk-h'; h.textContent = g.title; box.appendChild(h);
+    const grid = document.createElement('div'); grid.className = 'lk-grid';
+    g.items.forEach(i => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'lk-ch';
+      b.setAttribute('aria-pressed', String(sel.has(i.k)));
+      b.innerHTML = `<b lang="kn">${i.k}</b><small>${i.r}</small>`;
+      b.onclick = () => { sel.has(i.k) ? sel.delete(i.k) : sel.add(i.k); renderLevels(); };
+      grid.appendChild(b);
+    });
+    box.appendChild(grid);
+  });
+  $('lk-go').textContent = sel.size ? `Start with ${sel.size} letters` : 'Start';
+  $('lk-need').hidden = sel.size >= 4;
+}
+function show(id: string) { ['lk-start','lk-play','lk-end'].forEach(x => ($(x).hidden = x !== id)); }
+function next() {
+  locked = false;
+  let n; do { n = pool[Math.floor(Math.random() * pool.length)]; } while (n === cur && pool.length > 1);
+  cur = n;
+  const wrong = shuffle(pool.filter(i => i.r !== cur.r)).slice(0, 3);
+  $('lk-glyph').textContent = cur.k;
+  const box = $('lk-opts'); box.innerHTML = '';
+  shuffle([cur, ...wrong]).forEach(o => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'lk-opt'; b.textContent = o.r;
+    b.onclick = () => pick(b, o); box.appendChild(b);
+  });
+}
+function pick(btn: HTMLElement, o: Item) {
+  if (locked || left <= 0) return; locked = true; asked++;
+  if (o.r === cur.r) { score++; btn.classList.add('ok'); }
+  else { btn.classList.add('bad'); missed.set(cur.k, cur); [...$('lk-opts').children].forEach(c => { if (c.textContent === cur.r) c.classList.add('ok'); }); }
+  $('lk-score').textContent = String(score);
+  setTimeout(() => { if (left > 0) next(); }, o.r === cur.r ? 250 : 800);
+}
+function tick() {
+  left--; $('lk-time').textContent = Math.max(left, 0) + 's';
+  ($('lk-bar-fill') as HTMLElement).style.width = (left / DURATION * 100) + '%';
+  if (left <= 0) end();
+}
+function start() {
+  if (sel.size < 4) { $('lk-need').hidden = false; return; }
+  pool = ALL.filter(i => sel.has(i.k));
+  score = 0; asked = 0; left = DURATION; missed = new Map();
+  $('lk-score').textContent = '0'; $('lk-time').textContent = DURATION + 's';
+  ($('lk-bar-fill') as HTMLElement).style.width = '100%';
+  show('lk-play'); next(); clearInterval(timer); timer = window.setInterval(tick, 1000);
+}
+function end() {
+  clearInterval(timer); locked = true;
+  $('lk-final').textContent = String(score);
+  $('lk-summary').textContent = asked ? `${score} right out of ${asked}.` : 'No answers this time.';
+  const m = $('lk-missed'); m.innerHTML = '';
+  missed.forEach(i => { const c = document.createElement('span'); c.className = 'lk-chip'; c.innerHTML = `<b lang="kn">${i.k}</b>${i.r}`; m.appendChild(c); });
+  show('lk-end');
+}
+$('lk-all').onclick = () => { ALL.forEach(i => sel.add(i.k)); renderLevels(); }; $('lk-none').onclick = () => { sel.clear(); renderLevels(); };
+$('lk-go').onclick = start; $('lk-again').onclick = () => { show('lk-start'); renderLevels(); };
+renderLevels();
+</script>
