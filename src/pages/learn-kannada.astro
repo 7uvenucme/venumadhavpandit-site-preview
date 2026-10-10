@@ -79,10 +79,15 @@ const LEVELS: Level[] = [
   { id: 'letters', title: 'Letters', groups: [
     { title: 'Vowels', items: [
       v('ಅ','a'),v('ಆ','aa'),v('ಇ','i'),v('ಈ','ee'),v('ಉ','u'),v('ಊ','oo'),v('ಋ','ru'),
-      v('ಎ','e'),v('ಏ','ae'),v('ಐ','ai'),v('ಒ','o'),v('ಓ','oh'),v('ಔ','au'),v('ಅಂ','am') ] },
+      v('ಎ','e'),v('ಏ','ae'),v('ಐ','ai'),v('ಒ','o'),v('ಓ','oh'),v('ಔ','au'),v('ಅಂ','am'),v('ಅಃ','ah') ] },
     { title: 'Consonants', items: [
-      v('ಕ','ka'),v('ಗ','ga'),v('ಚ','cha'),v('ಜ','ja'),v('ತ','tha'),v('ದ','da'),
-      v('ನ','na'),v('ಪ','pa'),v('ಬ','ba'),v('ಮ','ma'),v('ರ','ra') ] } ] },
+      v('ಕ','ka'),v('ಖ','kha'),v('ಗ','ga'),v('ಘ','gha'),v('ಙ','nga'),
+      v('ಚ','cha'),v('ಛ','chha'),v('ಜ','ja'),v('ಝ','jha'),v('ಞ','nya'),
+      v('ಟ','tta'),v('ಠ','ttha'),v('ಡ','dda'),v('ಢ','ddha'),v('ಣ','nna'),
+      v('ತ','tha'),v('ಥ','thha'),v('ದ','da'),v('ಧ','dha'),v('ನ','na'),
+      v('ಪ','pa'),v('ಫ','pha'),v('ಬ','ba'),v('ಭ','bha'),v('ಮ','ma'),
+      v('ಯ','ya'),v('ರ','ra'),v('ಲ','la'),v('ವ','va'),v('ಶ','sha'),
+      v('ಷ','shha'),v('ಸ','sa'),v('ಹ','ha'),v('ಳ','lla') ] } ] },
   // Later: { id: 'syllables', ... } and { id: 'words', ... } with the same shape.
 ];
 const $ = (id: string) => document.getElementById(id)!;
