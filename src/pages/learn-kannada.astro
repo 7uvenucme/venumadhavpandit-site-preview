@@ -1,17 +1,19 @@
 ---
 import Base from '../layouts/Base.astro';
 ---
-<Base title="Learn to read Kannada" description="A free one-minute game to learn the Kannada script. See a letter, pick its sound. No login, nothing stored.">
+<Base title="Learn Kannada Online - Free Alphabet Quiz | Venumadhav Pandit" description="Learn to read Kannada free. Practice the alphabet and vowel combinations in 60-second quizzes. No login, no download." socialTitle="Learn Kannada Online - Free Alphabet Quiz" socialDescription="Learn to read Kannada free. Practice the alphabet and vowel combinations in 60-second quizzes. No login, no download." socialImage="/images/share-preview.jpg">
 <section class="lk container">
   <p class="lk-eyebrow">Learn to read Kannada</p>
   <div id="lk-app" class="lk-card" aria-live="polite">
     <div id="lk-start">
       <h1 class="lk-title">Read the script, one letter at a time.</h1>
-      <p class="lk-sub">Tap the letters you want to practice. Then you get 60 seconds to match each one to its sound.</p>
+      <p class="lk-sub" id="lk-instructions">Tap the letters you want to practice. Then you get 60 seconds to match each one to its sound.</p>
+      <div id="lk-level-picker" class="lk-level-picker" aria-label="Practice level"></div>
       <div class="lk-tools"><button type="button" id="lk-all">Select all</button><button type="button" id="lk-none">Clear</button></div>
       <div id="lk-levels" class="lk-levels"></div>
       <button class="lk-btn" id="lk-go" type="button">Start</button>
       <p class="lk-need" id="lk-need" hidden>Pick at least 4 letters.</p>
+      <p class="lk-note">Free. No login. No download.</p>
       <p class="lk-note">Nothing is saved. Refresh and it starts fresh.</p>
     </div>
     <div id="lk-play" hidden>
@@ -38,6 +40,10 @@ import Base from '../layouts/Base.astro';
 .lk-sub{color:#5a6663;font-size:17px;margin:0 0 22px}
 .lk-note{color:#7a8582;font-size:13px;margin:16px 0 0}
 .lk-levels{margin-bottom:20px}
+.lk-level-picker{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 16px}
+.lk-level-choice{padding:10px 8px;border-radius:12px;border:2px solid #dfe3cc;background:#fff;font:inherit;font-size:14px;font-weight:700;color:#19252b;cursor:pointer}
+.lk-level-choice[aria-pressed=true]{border-color:#6b7a2a;background:#f1f6dc;color:#425018}
+.lk-ch small{font-size:12px}
 .lk-h{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#945013;font-weight:700;margin:16px 0 8px}
 .lk-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .lk-ch{display:flex;flex-direction:column;align-items:center;padding:10px 2px 8px;border-radius:14px;border:2px solid #dfe3cc;background:#fff;font:inherit;color:#19252b;cursor:pointer}
@@ -71,38 +77,89 @@ import Base from '../layouts/Base.astro';
 <script>
 // Content is data. To add a level later (two-letter sounds, common words),
 // push another object into LEVELS with the same shape. Nothing else changes.
-type Item = { k: string; r: string };
-type Group = { title: string; items: Item[] };
+type Item = { k: string; r: string; family?: string };
+type Group = { title: string; items: Item[]; families?: Item[] };
 type Level = { id: string; title: string; groups: Group[] };
-const v = (k: string, r: string): Item => ({ k, r });
+const v = (k: string, r: string, family?: string): Item => ({ k, r, family });
+const baseGroups = [
+  { title: 'Vowels', items: [
+    v('ಅ','a'),v('ಆ','aa'),v('ಇ','i'),v('ಈ','ee'),v('ಉ','u'),v('ಊ','oo'),v('ಋ','ru'),
+    v('ಎ','e'),v('ಏ','ae'),v('ಐ','ai'),v('ಒ','o'),v('ಓ','oh'),v('ಔ','au'),v('ಅಂ','am'),v('ಅಃ','ah') ] },
+  { title: 'Consonants', items: [
+    v('ಕ','ka'),v('ಖ','kha'),v('ಗ','ga'),v('ಘ','gha'),v('ಙ','nga'),
+    v('ಚ','cha'),v('ಛ','chha'),v('ಜ','ja'),v('ಝ','jha'),v('ಞ','nya'),
+    v('ಟ','tta'),v('ಠ','ttha'),v('ಡ','dda'),v('ಢ','ddha'),v('ಣ','nna'),
+    v('ತ','tha'),v('ಥ','thha'),v('ದ','da'),v('ಧ','dha'),v('ನ','na'),
+    v('ಪ','pa'),v('ಫ','pha'),v('ಬ','ba'),v('ಭ','bha'),v('ಮ','ma'),
+    v('ಯ','ya'),v('ರ','ra'),v('ಲ','la'),v('ವ','va'),v('ಶ','sha'),
+    v('ಷ','shha'),v('ಸ','sa'),v('ಹ','ha'),v('ಳ','lla') ] }
+];
+const consonants = baseGroups[1].items;
+const signs = [
+  { sign:'', roman:'a' }, { sign:'ಾ', roman:'aa' }, { sign:'ಿ', roman:'i' }, { sign:'ೀ', roman:'ee' },
+  { sign:'ು', roman:'u' }, { sign:'ೂ', roman:'oo' }, { sign:'ೃ', roman:'ru' }, { sign:'ೆ', roman:'e' },
+  { sign:'ೇ', roman:'ae' }, { sign:'ೈ', roman:'ai' }, { sign:'ೊ', roman:'o' }, { sign:'ೋ', roman:'oh' },
+  { sign:'ೌ', roman:'au' }, { sign:'ಂ', roman:'am' }, { sign:'ಃ', roman:'ah' }
+];
+const familySets = [
+  { title:'Velars', ids:['ಕ','ಖ','ಗ','ಘ','ಙ'] },
+  { title:'Palatals', ids:['ಚ','ಛ','ಜ','ಝ','ಞ'] },
+  { title:'Retroflex', ids:['ಟ','ಠ','ಡ','ಢ','ಣ'] },
+  { title:'Dentals', ids:['ತ','ಥ','ದ','ಧ','ನ'] },
+  { title:'Labials', ids:['ಪ','ಫ','ಬ','ಭ','ಮ'] },
+  { title:'Other consonants', ids:['ಯ','ರ','ಲ','ವ','ಶ','ಷ','ಸ','ಹ','ಳ'] }
+];
+const comboGroups: Group[] = familySets.map(set => {
+  const families = consonants.filter(c => set.ids.includes(c.k));
+  const items = families.flatMap(c => signs.map(sign => {
+    const stem = c.r.slice(0, -1);
+    return v(c.k + sign.sign, stem + sign.roman, c.k);
+  }));
+  return { title:set.title, items, families };
+});
 const LEVELS: Level[] = [
-  { id: 'letters', title: 'Letters', groups: [
-    { title: 'Vowels', items: [
-      v('ಅ','a'),v('ಆ','aa'),v('ಇ','i'),v('ಈ','ee'),v('ಉ','u'),v('ಊ','oo'),v('ಋ','ru'),
-      v('ಎ','e'),v('ಏ','ae'),v('ಐ','ai'),v('ಒ','o'),v('ಓ','oh'),v('ಔ','au'),v('ಅಂ','am'),v('ಅಃ','ah') ] },
-    { title: 'Consonants', items: [
-      v('ಕ','ka'),v('ಖ','kha'),v('ಗ','ga'),v('ಘ','gha'),v('ಙ','nga'),
-      v('ಚ','cha'),v('ಛ','chha'),v('ಜ','ja'),v('ಝ','jha'),v('ಞ','nya'),
-      v('ಟ','tta'),v('ಠ','ttha'),v('ಡ','dda'),v('ಢ','ddha'),v('ಣ','nna'),
-      v('ತ','tha'),v('ಥ','thha'),v('ದ','da'),v('ಧ','dha'),v('ನ','na'),
-      v('ಪ','pa'),v('ಫ','pha'),v('ಬ','ba'),v('ಭ','bha'),v('ಮ','ma'),
-      v('ಯ','ya'),v('ರ','ra'),v('ಲ','la'),v('ವ','va'),v('ಶ','sha'),
-      v('ಷ','shha'),v('ಸ','sa'),v('ಹ','ha'),v('ಳ','lla') ] } ] },
-  // Later: { id: 'syllables', ... } and { id: 'words', ... } with the same shape.
+  { id:'letters', title:'Single letters', groups:baseGroups },
+  { id:'combos', title:'Vowel combinations', groups:comboGroups }
 ];
 const $ = (id: string) => document.getElementById(id)!;
 const DURATION = 60;
-const level = LEVELS[0]; const ALL = level.groups.flatMap(g => g.items); let pool: Item[] = ALL; const sel = new Set<string>(ALL.map(i => i.k)); let score = 0, asked = 0, left = DURATION, timer: number | undefined, cur: Item, locked = false;
+let level = LEVELS[0]; let ALL = level.groups.flatMap(g => g.items); let pool: Item[] = ALL;
+const selectionKeys = (target: Level) => target.id === 'combos'
+  ? target.groups.flatMap(g => g.families || []).map(f => f.k)
+  : target.groups.flatMap(g => g.items).map(i => i.k);
+let sel = new Set<string>(selectionKeys(level)); let score = 0, asked = 0, left = DURATION, timer: number | undefined, cur: Item, locked = false;
 let missed = new Map<string, Item>();
 const shuffle = <T,>(a: T[]) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const makeRound = (items: Item[]): Item[] => items.length >= 20 ? shuffle(items).slice(0, 20) : shuffle(Array.from({ length: 20 }, (_, i) => items[i % items.length]));
 let round: Item[] = []; let roundIndex = 0;
+function setLevel(next: Level) {
+  level = next; ALL = level.groups.flatMap(g => g.items); pool = ALL;
+  sel = new Set(selectionKeys(level)); renderLevels();
+}
 function renderLevels() {
+  const picker = $('lk-level-picker'); picker.innerHTML = '';
+  LEVELS.forEach(l => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'lk-level-choice';
+    b.setAttribute('aria-pressed', String(level.id === l.id)); b.textContent = l.title;
+    b.onclick = () => { if (level.id !== l.id) setLevel(l); };
+    picker.appendChild(b);
+  });
+  $('lk-instructions').textContent = level.id === 'combos'
+    ? 'Choose the consonant families you want to practice. Each one pairs with all 15 vowel sounds.'
+    : 'Tap the letters you want to practice. Then you get 60 seconds to match each one to its sound.';
   const box = $('lk-levels'); box.innerHTML = '';
   level.groups.forEach(g => {
     const h = document.createElement('div'); h.className = 'lk-h'; h.textContent = g.title; box.appendChild(h);
     const grid = document.createElement('div'); grid.className = 'lk-grid';
-    g.items.forEach(i => {
+    if (level.id === 'combos') {
+      (g.families || []).forEach(f => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'lk-ch';
+        b.setAttribute('aria-pressed', String(sel.has(f.k)));
+        b.innerHTML = `<b lang="kn">${f.k}</b><small>${f.r} series</small>`;
+        b.onclick = () => { sel.has(f.k) ? sel.delete(f.k) : sel.add(f.k); renderLevels(); };
+        grid.appendChild(b);
+      });
+    } else g.items.forEach(i => {
       const b = document.createElement('button'); b.type = 'button'; b.className = 'lk-ch';
       b.setAttribute('aria-pressed', String(sel.has(i.k)));
       b.innerHTML = `<b lang="kn">${i.k}</b><small>${i.r}</small>`;
@@ -111,8 +168,13 @@ function renderLevels() {
     });
     box.appendChild(grid);
   });
-  $('lk-go').textContent = sel.size ? `Start with ${sel.size} letters` : 'Start';
+  const noun = level.id === 'combos' ? 'families' : 'letters';
+  $('lk-go').textContent = sel.size ? `Start with ${sel.size} ${noun}` : 'Start';
+  $('lk-need').textContent = level.id === 'combos' ? 'Pick at least 4 consonant families.' : 'Pick at least 4 letters.';
   $('lk-need').hidden = sel.size >= 4;
+}
+function selectedItems() {
+  return level.id === 'combos' ? ALL.filter(i => i.family && sel.has(i.family)) : ALL.filter(i => sel.has(i.k));
 }
 function show(id: string) { ['lk-start','lk-play','lk-end'].forEach(x => ($(x).hidden = x !== id)); }
 function next() {
@@ -140,7 +202,7 @@ function tick() {
 }
 function start() {
   if (sel.size < 4) { $('lk-need').hidden = false; return; }
-  pool = ALL.filter(i => sel.has(i.k));
+  pool = selectedItems();
   round = makeRound(pool); roundIndex = 0;
   score = 0; asked = 0; left = DURATION; missed = new Map();
   $('lk-score').textContent = '0'; $('lk-time').textContent = DURATION + 's';
@@ -155,7 +217,7 @@ function end() {
   missed.forEach(i => { const c = document.createElement('span'); c.className = 'lk-chip'; c.innerHTML = `<b lang="kn">${i.k}</b>${i.r}`; m.appendChild(c); });
   show('lk-end');
 }
-$('lk-all').onclick = () => { ALL.forEach(i => sel.add(i.k)); renderLevels(); }; $('lk-none').onclick = () => { sel.clear(); renderLevels(); };
+$('lk-all').onclick = () => { selectionKeys(level).forEach(k => sel.add(k)); renderLevels(); }; $('lk-none').onclick = () => { sel.clear(); renderLevels(); };
 $('lk-go').onclick = start; $('lk-again').onclick = () => { show('lk-start'); renderLevels(); };
 renderLevels();
 </script>
