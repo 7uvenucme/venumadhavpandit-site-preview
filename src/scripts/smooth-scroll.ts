@@ -2,7 +2,7 @@ import Lenis from 'lenis';
 import '../styles/smooth-scroll.css';
 
 // One initializer shared by the site layout and the standalone calculator.
-// Keep touch-enabled controls and nested artwork scrolling native.
+// Leave Tina's editor, touch scrolling, and nested artwork controls native.
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 let lenis: Lenis | undefined;
 let frame = 0;
@@ -17,8 +17,7 @@ function start() {
   if (lenis || reducedMotion.matches || /\/admin(?:\/|$)/.test(location.pathname)) return;
   lenis = new Lenis({
     anchors: true,
-    syncTouch: true,
-    syncTouchLerp: 0.075,
+    syncTouch: false,
     prevent: (node) => node.matches('dialog, .art-track'),
   });
   syncDialog();
