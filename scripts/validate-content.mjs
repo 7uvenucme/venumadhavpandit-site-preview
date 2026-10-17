@@ -58,5 +58,10 @@ for (const file of fs.readdirSync(builds).filter(f => f.endsWith('.md'))) {
   for (const f of ['title','eyebrow','summary']) nonBlank(data[f], `${builds}/${file}:${f}`);
   nonBlank(content, `${builds}/${file}:body`);
 }
+for (const file of fs.readdirSync('src/content/writing').filter(f => f.endsWith('.md'))) {
+  const {data,content}=read(path.join('src/content/writing',file));
+  for (const field of ['title','summary','date','image','imageAlt']) nonBlank(data[field], `writing/${file}:${field}`);
+  nonBlank(content, `writing/${file}:body`);
+}
 if (errors.length) { console.error('Site content validation failed:\n' + errors.map(x => `- ${x}`).join('\n')); process.exit(1); }
 console.log('Site content validation passed.');

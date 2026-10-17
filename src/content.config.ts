@@ -71,4 +71,8 @@ const pages = defineCollection({
   }),
 });
 
-export const collections = { builds, pages };
+const writing = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/writing' }),
+  schema: z.object({ title: z.string().min(1), summary: z.string().min(1), date: z.string(), image: z.string(), imageAlt: z.string().min(1) }),
+});
+export const collections = { builds, pages, writing };

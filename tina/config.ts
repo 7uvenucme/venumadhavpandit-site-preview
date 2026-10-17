@@ -52,6 +52,15 @@ export default defineConfig({
   schema: {
     collections: [
       {
+        name: "writing", label: "Writing", path: "src/content/writing", format: "md",
+        fields: [
+          requiredText("title", "Title"), requiredText("summary", "Summary", {component:"textarea"}),
+          requiredText("date", "Date (YYYY-MM-DD)"), requiredImage("image", "Illustration"),
+          requiredText("imageAlt", "Image description"),
+          {type:"rich-text", name:"body", label:"Article", isBody:true, required:true},
+        ],
+      },
+      {
         name: "build",
         label: "Builds (projects)",
         path: "src/content/builds",
