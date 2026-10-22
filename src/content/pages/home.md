@@ -2,7 +2,7 @@
 title: 'Venumadhav Pandit: Marketing, Brand, Digital, Technology Professional'
 description: 'Venumadhav Pandit is a Mumbai-based marketer with expertise in digital products, campaigns and content.'
 heroEyebrow: 'Marketing × making · Mumbai, India'
-heroTitle: Ideas I make <em>real.</em>
+heroTitle: '“The bottom layer of a <em>sabudana khichdi</em> kadai aspires to be <em>sabudana wada.</em>”'
 heroIntro: 'I''m Venumadhav Pandit. I work across brand, content and digital, and I build things worth sharing. This is where the projects live.'
 heroButtonLabel: Explore my builds
 heroImage: /images/flying-chairs.webp
