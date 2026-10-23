@@ -4,7 +4,7 @@ import { findEndpoint } from './endpoint.mjs';
 import { hv } from './chargers.mjs';
 import OCM from '../ocm.json';
 const api = base => {
-  const post = async (p, b) => { const r = await fetch(base + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b) }); const j = await r.json().catch(() => ({})); return { status: r.status, j }; };
+  const post = async (p, b) => { let r, j; for (let k = 0; k < 3; k++) { r = await fetch(base + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b) }); j = await r.json().catch(() => ({})); if (r.status < 500 || k === 2) break; await new Promise(z => setTimeout(z, 900 * (k + 1))); } return { status: r.status, j }; };
   const chk = (status, j) => { if (status === 429) { const e = new Error(j.error || 'routing limit reached'); e.code = 'BUDGET'; throw e; } if (status >= 500 || status === 403) throw new Error('routing service unavailable (' + status + ')'); };
   return {
     route: async c => { const { status, j } = await post('/route', { coordinates: c }); chk(status, j); const f = j.features?.[0]; if (!f) return null; return { legs: f.properties.segments.map(g => ({ km: g.distance / 1000, min: g.duration / 60 })), km: f.properties.summary.distance / 1000, min: f.properties.summary.duration / 60, line: f.geometry.coordinates }; },

@@ -18,7 +18,7 @@ const marksOf = (EX: any): Mk[] => [
   { at: [EX.origin.lon, EX.origin.lat], kind: 'start', label: EX.origin.name },
   ...thin((EX.chargers || []).filter((c: any) => !c.used && c.kmAlong > 1 && c.kmAlong < (EX.directKm || 0) - 25), bboxOf(EX)).map((c: any) => ({ at: [c.lon, c.lat] as [number, number], kind: 'dc' as const })),
   ...(EX.chargers || []).filter((c: any) => c.used).map((c: any) => ({ at: [c.lon, c.lat] as [number, number], kind: 'ci' as const, label: Math.round(c.kmAlong) + ' km' })),
-  { at: [EX.dest.lon, EX.dest.lat], kind: 'end', label: EX.live ? (EX.straightKm ? 'Road end' : 'Road end = pin') : EX.dest.name },
+  { at: [EX.dest.lon, EX.dest.lat], kind: 'end', label: EX.live ? (EX.straightKm ? 'Road end' : 'Road end, within 350 m of pin') : EX.dest.name },
 ];
 const bboxOf = (EX: any): [number, number, number, number] => {
   if (!EX.live) return [75.5, 11.8, 80.2, 18.2];
@@ -120,7 +120,7 @@ function Itinerary({ onNext, busy }: { onNext: () => void; busy: boolean }) {
       <div className="col">
         <div className="card tlc"><ol className="tl">
           {ev0.map((e: any, i: number) => {
-            if (e.kind === 'day') return <React.Fragment key={i}><li className="ev day"><span className="t" /><div className="b"><strong>Overnight pause</strong><span>Lodging is not arranged or suggested here. The charger is not assumed to have rooms.</span></div></li><li className="ev day"><span className="t" /><div className="b"><strong>Day {e.day}</strong></div></li></React.Fragment>;
+            if (e.kind === 'day') return <React.Fragment key={i}><li className="ev day"><span className="t" /><div className="b"><strong>Overnight pause</strong><span>No lodging is booked or confirmed. Named places near the last charging stop, where the OpenStreetMap extract has any, are listed under that stop. They are partial, and rooms and availability are unknown. The charger is not assumed to have rooms.</span></div></li><li className="ev day"><span className="t" /><div className="b"><strong>Day {e.day}</strong></div></li></React.Fragment>;
             if (e.kind === 'start') return <li key={i} className="ev start"><span className="t">{e.time}</span><div className="b"><strong>Early start</strong><span>Home charge to {e.pct}% · about {e.rangeKm} km range</span><Bar dep={e.pct} /></div></li>;
             if (e.kind === 'drive') return <li key={i} className="ev drive"><span className="t">{e.time}</span><div className="b"><strong>Drive {Math.round(e.km)} km</strong><span>{hm(e.mins)} · about {Math.round(e.kwh)} kWh</span></div></li>;
             if (e.kind === 'gap') return <li key={i} className="ev gap"><span className="t">{e.time}</span><div className="b"><strong>{e.title || (e.km > 0 ? `Gap at about km ${e.km}` : 'Gap ahead')}</strong><span>{e.km > 0 ? `${e.soc}% left, about ${e.rangeKm} km range. ` : ''}{e.note}</span></div></li>;
