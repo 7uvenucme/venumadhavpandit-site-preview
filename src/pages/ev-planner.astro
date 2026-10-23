@@ -1,13 +1,13 @@
 ---
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const api = import.meta.env.PUBLIC_EV_API || '';
-const title = 'Surprise EV trip planner (draft)';
+const title = 'Surprise EV trip planner';
 const description = 'Draft: a random place in India, a real road route, and a day-by-day plan for a Mahindra BE 6 with charging stops, savings and gaps shown.';
 ---
 <!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>{title}</title><meta name="description" content={description}/><meta name="robots" content="noindex"/><meta name="theme-color" content="#f8f8f4"/>
 <link rel="stylesheet" href={`${base}/ev-planner/app.css`}/></head>
 <body style="margin:0"><div class="evp">
-  <header class="evp-nav"><a href="https://www.venumadhavpandit.com/">← Back to the builds</a><span>Draft, not launched</span></header>
+  <header class="evp-nav"><a href="https://www.venumadhavpandit.com/">← Back to the builds</a></header>
   <main class="evp-main">
     <div class="evp-intro"><span class="eyebrow">SURPRISE TRIP · BE 6 SPORTEQ</span><h1>Where should the EV <span>take you?</span></h1><p>A random place in India, a real road route and a day-by-day charging plan.</p></div>
     <div id="ev-root"></div>

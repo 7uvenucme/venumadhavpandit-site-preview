@@ -64,7 +64,7 @@ function calc(EX: any, home: number, tariff: number, price: number, kmpl: number
   return { ovBatt, ovPaid, fastPaid, c1, c2, cOv, c3, ev, pet, save: pet - ev };
 }
 const nOf = (EX: any) => { const e = EX.events || []; return { nChg: e.filter((x: any) => x.kind === 'charge').length, nOv: e.filter((x: any) => x.kind === 'charge' && x.overnight).length }; };
-const Mode = ({ live }: { live: boolean }) => <span className={'pill ' + (live ? 'live' : 'ex')}>{live ? 'Live test backend' : 'Worked example'}</span>;
+const Mode = ({ live }: { live: boolean }) => live ? null : <span className={'pill ' + (live ? 'live' : 'ex')}>{live ? 'Live test backend' : 'Worked example'}</span>;
 const Warn = () => <p className="warn"><b>Before you rely on this:</b> numbers are planner estimates. Charger status is not checked live, so any stop can be down or busy. Where a gap is shown, arrange AC charging yourself. No arrival time is promised for a gap.</p>;
 
 function Dice({ onGo, live, onPin }: { onGo: () => void; live: boolean; onPin: (city: string, pin: [number, number], name?: any) => void }) {
