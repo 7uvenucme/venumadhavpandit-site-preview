@@ -39,6 +39,24 @@ function Bar({ arr, dep }: { arr?: number; dep?: number }) {
 const kmBetween = (a: number, b: number, c: number, d: number) => { const t = (x: number) => x * Math.PI / 180, h = Math.sin(t(c - a) / 2) ** 2 + Math.cos(t(a)) * Math.cos(t(c)) * Math.sin(t(d - b) / 2) ** 2; return 2 * 6371 * Math.asin(Math.sqrt(h)); };
 const titleCase = (s: string) => s.replace(/\w\S*/g, w => w[0].toUpperCase() + w.slice(1));
 
+// Named places from the bundled OSM/Wikidata visit list, near a point.
+const nearVisits = (lat: number, lon: number, maxKm = 40, limit = 5) => (VISIT as any[])
+  .filter(v => Math.abs(v[1] - lat) < 0.7 && Math.abs(v[2] - lon) < 0.8)
+  .filter(v => !/terminus|station|junction|airport|bus stand/i.test(v[0]))
+  .map(v => ({ n: v[0], en: v[4], k: v[3], d: kmBetween(lat, lon, v[1], v[2]) }))
+  .filter(v => v.d <= maxKm)
+  .sort((x, y) => x.d - y.d).slice(0, limit);
+
+// Editorial ranking for Wikipedia pages: sights and stories first, bare administrative definitions last.
+const DULL = /census town|village|town in|taluk|tehsil|mandal|revenue|panchayat|municipal|subdivision|block in|district|constituency|neighbourhood|locality|headquarters/i;
+const SIGHT = /fort|palace|temple|church|mosque|dargah|monastery|beach|hill|peak|waterfall|falls|lake|dam|reservoir|wildlife|sanctuary|national park|museum|monument|memorial|tomb|caves?|ruins|castle|island|lighthouse|shrine|cathedral|basilica|gurudwara|gurdwara|stupa|zoo|viewpoint|harbour|port|backwater|mangrove|estate|water front/i;
+const wikisOf = (facts: any): any[] => {
+  const arr = ((facts && facts.nearby) || []);
+  const scored = arr.map((p: any) => { const t = `${p.desc} ${p.title} ${p.extract}`; return { p, s: (SIGHT.test(t) ? 2 : 0) + ((p.extract || '').length > 120 ? 1 : 0) }; });
+  const interesting = scored.filter(x => x.s > 0 && !DULL.test(`${x.p.desc} ${x.p.title}`)).sort((a, b) => b.s - a.s || a.p.km - b.p.km);
+  return interesting.slice(0, 3).map(x => x.p);
+};
+
 // Named food and stays from the bundled OpenStreetMap extract, shown as part of the stop rather than buried in a technical note.
 function StopLife({ id, overnight }: { id: string; overnight: boolean }) {
   const f = (NEAR as any)[String(id).replace('ocm-', '')];
@@ -58,8 +76,8 @@ function StopLife({ id, overnight }: { id: string; overnight: boolean }) {
 function Around({ EX }: { EX: any }) {
   const pt = EX.end || EX.dest;
   if (!pt) return null;
-  const facts = (EX.place && EX.place.nearby) || [];
-  const visits = (VISIT as any[]).filter(v => Math.abs(v[1] - pt.lat) < 0.4 && Math.abs(v[2] - pt.lon) < 0.45).filter(v => !/terminus|station|junction|airport|bus stand/i.test(v[0])).map(v => ({ n: v[0], en: v[4], k: v[3], d: kmBetween(pt.lat, pt.lon, v[1], v[2]) })).filter(v => v.d <= 40).sort((x, y) => x.d - y.d).slice(0, 5);
+  const facts = wikisOf(EX.place);
+  const visits = nearVisits(pt.lat, pt.lon);
   if (!facts.length && !visits.length) return null;
   return <div className="card around"><span className="eyebrow">WHILE YOU'RE THERE</span>
     {facts.length > 0 && <ul className="facts">{facts.slice(0, 3).map((p: any) => <li key={p.title}><a href={p.url} target="_blank" rel="noreferrer">{p.title}</a><span className="clamp fx">{p.extract || p.desc}</span></li>)}</ul>}
@@ -98,7 +116,8 @@ function Dice({ onGo, live, onPin }: { onGo: () => void; live: boolean; onPin: (
   };
   const lab = pname && pinLabel(pname);
   const straight = pin ? Math.round(kmBetween(CITIES[city][1], CITIES[city][0], pin[1], pin[0])) : 0;
-  const area = (facts && facts.nearby) || [];
+  const area = wikisOf(facts);
+  const pv = pin ? nearVisits(pin[1], pin[0], 60, 4) : [];
   return <section className="grid2 reveal" aria-label="Destination reveal">
     <div className="card mapcard"><div className="map"><GeoMap cis={CI} label={pin ? 'Map of India with your start city and the destination pin' : 'Map of India with Charge_iN stations'} markers={pin ? [{ at: CITIES[city], kind: 'start', label: city }, { at: pin, kind: 'pin' }] : [{ at: CITIES[city], kind: 'start', label: city }]} straight={pin ? [CITIES[city], pin] : undefined} /></div>
       <p className="cap">Triangles: Charge_iN fast chargers from Mahindra's own station map.</p></div>
@@ -115,14 +134,14 @@ function Dice({ onGo, live, onPin }: { onGo: () => void; live: boolean; onPin: (
         <h2 className="big">{lab || (pname ? 'A remote spot in India' : 'Finding the place name…')}</h2>
         <p className="sub">{pname && pname.rel === 'Near' && pname.km != null ? `The pin is about ${pname.km} km from ${pname.title}, the nearest named town or larger village we have. ` : ''}About {straight.toLocaleString('en-IN')} km in a straight line from {city}. <span className="muted">Pin {pin[1].toFixed(3)}° N, {pin[0].toFixed(3)}° E</span></p>
         {factsBusy && <p className="muted sm">Learning about the area…</p>}
-        {!factsBusy && facts && area.length > 0 && <div className="factarea"><span className="eyebrow sm">AROUND THERE</span>
-          <ul className="facts">{area.slice(0, 3).map((p: any) => <li key={p.title}><a href={p.url} target="_blank" rel="noreferrer">{p.title}</a><span className="clamp fx">{p.extract || p.desc}</span></li>)}</ul>
+        {!factsBusy && (area.length > 0 || pv.length > 0) && <div className="factarea"><span className="eyebrow sm">WHAT'S AROUND THERE</span>
+          {area.length > 0 && <ul className="facts">{area.map((p: any) => <li key={p.title}><a href={p.url} target="_blank" rel="noreferrer">{p.title}</a><span className="clamp fx">{p.extract || p.desc}</span></li>)}</ul>}
+          {pv.length > 0 && <ul className="vlist">{pv.map(v => <li key={v.n + v.d}><span>{v.en || v.n}{v.en && !v.n.toLowerCase().startsWith(v.en.toLowerCase().split(' ')[0]) ? <em> · {v.n}</em> : null}</span><i>{v.k.replace('_', ' ')} · {v.d < 10 ? v.d.toFixed(1) : Math.round(v.d)} km</i></li>)}</ul>}
         </div>}
-        {!factsBusy && facts && !area.length && <p className="muted sm">No write-ups near this pin — a genuinely quiet corner.</p>}
         <div className="car">BE 6 SPORTEQ Launch Edition 79 kWh</div>
         <button className="btn" onClick={onGo}>Let's take our EV there</button>
         <button className="linkbtn" onClick={reveal} disabled={busy}>{busy ? 'Finding…' : 'Somewhere else'}</button>
-        <p className="fineprint">A random point inside India's outline; the dashed line is straight, not a road. Names: OpenStreetMap. Facts: Wikipedia.</p>
+        <p className="fineprint">A random point inside India's outline; the dashed line is straight, not a road. Names: OpenStreetMap. Facts: Wikipedia. Places are straight-line leads, hours not checked.</p>
       </>}
     </div>
   </section>;
