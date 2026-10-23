@@ -50,11 +50,33 @@ const nearVisits = (lat: number, lon: number, maxKm = 40, limit = 5) => (VISIT a
 // Editorial ranking for Wikipedia pages: sights and stories first, bare administrative definitions last.
 const DULL = /census town|village|town in|taluk|tehsil|mandal|revenue|panchayat|municipal|subdivision|block in|district|constituency|neighbourhood|locality|headquarters/i;
 const SIGHT = /fort|palace|temple|church|mosque|dargah|monastery|beach|hill|peak|waterfall|falls|lake|dam|reservoir|wildlife|sanctuary|national park|museum|monument|memorial|tomb|caves?|ruins|castle|island|lighthouse|shrine|cathedral|basilica|gurudwara|gurdwara|stupa|zoo|viewpoint|harbour|port|backwater|mangrove|estate|water front/i;
+// Display cleanup for Wikipedia extracts: strip pronunciation/alias boilerplate, trim at a sentence boundary. Text stays source-grounded; only boilerplate is removed.
+const IPA = /[\u0250-\u02AF\u1D00-\u1D7F\u0300-\u036F\u02C8\u02CC]/;
+const cleanSnip = (extract: string): string => {
+  let s = ' ' + (extract || '').replace(/\s+/g, ' ');
+  let prev = '';
+  while (prev !== s) { prev = s; s = s.replace(/\s*\([^()]*\)/g, m => (IPA.test(m) || /pronounced|IPA|Malayalam|Hindi|Tamil|Telugu|Kannada|Marathi|Bengali|Tulu|Konkani|Urdu|listen/i.test(m) || /[^\x00-\x7F]/.test(m) ? ' ' : m)); }
+  s = s.replace(/,?\s*(formerly|also|earlier|officially|colloquially) known as [^.;]+?(?=,\s*(is|are|was|were|it|he|she|the|a|an)\b|[.;])/gi, '');
+  s = s.replace(/\s+,/g, ',').replace(/,\s*,/g, ',').replace(/\(\s*\)/g, ' ').replace(/\s{2,}/g, ' ').trim();
+  s = s.replace(/^,+\s*/, '').replace(/\b,+\s*(is|are|was|were)\b/g, ' $1').replace(/\s+\./g, '.').replace(/\.\s*,/g, '.').replace(/(\.\s+)([a-z])/g, (m, p, c) => p + c.toUpperCase());
+  const parts = s.match(/[^.!?]+[.!?]+/g) || [s];
+  let out = '';
+  for (const p of parts) { const t = p.trim(); if (out && (out + ' ' + t).length > 210) break; out = out ? out + ' ' + t : t; if (out.length > 90) break; }
+  return out || s.slice(0, 210);
+};
+const titleToks = (t: string) => new Set((t || '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(w => w.length > 2 && w !== 'the'));
 const wikisOf = (facts: any): any[] => {
   const arr = ((facts && facts.nearby) || []);
   const scored = arr.map((p: any) => { const t = `${p.desc} ${p.title} ${p.extract}`; return { p, s: (SIGHT.test(t) ? 2 : 0) + ((p.extract || '').length > 120 ? 1 : 0) }; });
   const interesting = scored.filter(x => x.s > 0 && !DULL.test(`${x.p.desc} ${x.p.title}`)).sort((a, b) => b.s - a.s || a.p.km - b.p.km);
-  return interesting.slice(0, 3).map(x => x.p);
+  const kept: any[] = [];
+  for (const x of interesting) { // drop near-duplicate pages telling the same story (e.g. two pages for one bridge)
+    const t = titleToks(x.p.title);
+    if (kept.some(k => { const kk = titleToks(k.title); const inter = [...t].filter(w => kk.has(w as string)).length; return inter / Math.max(1, Math.min(t.size, kk.size)) >= 0.6; })) continue;
+    kept.push(x.p);
+    if (kept.length >= 3) break;
+  }
+  return kept.map((p: any) => ({ ...p, snip: cleanSnip(p.extract || p.desc || '') }));
 };
 
 // Named food and stays from the bundled OpenStreetMap extract, shown as part of the stop rather than buried in a technical note.
@@ -80,7 +102,7 @@ function Around({ EX }: { EX: any }) {
   const visits = nearVisits(pt.lat, pt.lon);
   if (!facts.length && !visits.length) return null;
   return <div className="card around"><span className="eyebrow">WHILE YOU'RE THERE</span>
-    {facts.length > 0 && <ul className="facts">{facts.slice(0, 3).map((p: any) => <li key={p.title}><a href={p.url} target="_blank" rel="noreferrer">{p.title}</a><span className="clamp fx">{p.extract || p.desc}</span></li>)}</ul>}
+    {facts.length > 0 && <ul className="facts">{facts.slice(0, 3).map((p: any) => <li key={p.title}><a href={p.url} target="_blank" rel="noreferrer">{p.title}</a><span className="fx">{p.snip}</span></li>)}</ul>}
     {visits.length > 0 && <ul className="vlist">{visits.map(v => <li key={v.n + v.d}><span>{v.en || v.n}{v.en && !v.n.toLowerCase().startsWith(v.en.toLowerCase().split(' ')[0]) ? <em> · {v.n}</em> : null}</span><i>{v.k.replace('_', ' ')} · {v.d < 10 ? v.d.toFixed(1) : Math.round(v.d)} km</i></li>)}</ul>}
     <small>From Wikipedia and the OpenStreetMap extract, straight-line from the {EX.live ? 'road endpoint' : 'example destination'} — not routed, hours and access not checked.</small>
   </div>;
@@ -133,14 +155,14 @@ function Dice({ onGo, live, onPin }: { onGo: () => void; live: boolean; onPin: (
         <span className="eyebrow">YOUR DESTINATION</span>
         <h2 className="big">{lab || (pname ? 'A remote spot in India' : 'Finding the place name…')}</h2>
         <p className="sub">{pname && pname.rel === 'Near' && pname.km != null ? `The pin is about ${pname.km} km from ${pname.title}, the nearest named town or larger village we have. ` : ''}About {straight.toLocaleString('en-IN')} km in a straight line from {city}. <span className="muted">Pin {pin[1].toFixed(3)}° N, {pin[0].toFixed(3)}° E</span></p>
-        {factsBusy && <p className="muted sm">Learning about the area…</p>}
-        {!factsBusy && (area.length > 0 || pv.length > 0) && <div className="factarea"><span className="eyebrow sm">WHAT'S AROUND THERE</span>
-          {area.length > 0 && <ul className="facts">{area.map((p: any) => <li key={p.title}><a href={p.url} target="_blank" rel="noreferrer">{p.title}</a><span className="clamp fx">{p.extract || p.desc}</span></li>)}</ul>}
-          {pv.length > 0 && <ul className="vlist">{pv.map(v => <li key={v.n + v.d}><span>{v.en || v.n}{v.en && !v.n.toLowerCase().startsWith(v.en.toLowerCase().split(' ')[0]) ? <em> · {v.n}</em> : null}</span><i>{v.k.replace('_', ' ')} · {v.d < 10 ? v.d.toFixed(1) : Math.round(v.d)} km</i></li>)}</ul>}
-        </div>}
         <div className="car">BE 6 SPORTEQ Launch Edition 79 kWh</div>
         <button className="btn" onClick={onGo}>Let's take our EV there</button>
         <button className="linkbtn" onClick={reveal} disabled={busy}>{busy ? 'Finding…' : 'Somewhere else'}</button>
+        {factsBusy && <p className="muted sm">Learning about the area…</p>}
+        {!factsBusy && (area.length > 0 || pv.length > 0) && <div className="factarea"><span className="eyebrow sm">WHAT'S AROUND THERE</span>
+          {area.length > 0 && <ul className="facts">{area.map((p: any) => <li key={p.title}><a href={p.url} target="_blank" rel="noreferrer">{p.title}</a><span className="fx">{p.snip}</span></li>)}</ul>}
+          {pv.length > 0 && <ul className="vlist">{pv.map(v => <li key={v.n + v.d}><span>{v.en || v.n}{v.en && !v.n.toLowerCase().startsWith(v.en.toLowerCase().split(' ')[0]) ? <em> · {v.n}</em> : null}</span><i>{v.k.replace('_', ' ')} · {v.d < 10 ? v.d.toFixed(1) : Math.round(v.d)} km</i></li>)}</ul>}
+        </div>}
         <p className="fineprint">A random point inside India's outline; the dashed line is straight, not a road. Names: OpenStreetMap. Facts: Wikipedia. Places are straight-line leads, hours not checked.</p>
       </>}
     </div>

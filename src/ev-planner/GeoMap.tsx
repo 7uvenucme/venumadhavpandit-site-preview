@@ -45,6 +45,7 @@ export function GeoMap({ cis, bbox = [67.5, 6, 98.5, 37.5], markers, route, stra
         const flip = x + u * 2.4 + tw > right; let ly = y + u * 0.9;
         const box = (ly: number) => flip ? { x0: x - u * 2.4 - tw, x1: x - u * 2.4, y0: ly - fs, y1: ly + fs * 0.3 } : { x0: x + u * 2.4, x1: x + u * 2.4 + tw, y0: ly - fs, y1: ly + fs * 0.3 };
         for (let k = 0; k < 8; k++) { const bx = box(ly); if (!placed.some(p => bx.x0 < p.x1 && bx.x1 > p.x0 && bx.y0 < p.y1 && bx.y1 > p.y0)) break; ly += (k % 2 ? -1 : 1) * fs * 1.1 * (Math.floor(k / 2) + 1); }
+        ly = Math.min(Math.max(ly, b + u * 0.6 + fs), b + h - u * 0.6 - fs * 0.3); // keep the label inside the viewBox (bottom edge clipped 'Road end')
         placed.push(box(ly)); labels[i] = { x: flip ? x - u * 2.4 : x + u * 2.4, y: ly, anchor: flip ? 'end' : 'start' };
       });
       return order.map(i => {
