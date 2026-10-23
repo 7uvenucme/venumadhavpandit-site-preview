@@ -1,0 +1,28 @@
+// Cloudflare Worker (free plan) proxy for ORS. NOT DEPLOYED. Secrets: ORS_KEY (wrangler secret). Allowed origins fixed below.
+import { DurableObject } from 'cloudflare:workers';
+import { CounterCore, COUNTER_LIMITS } from './counter.mjs';
+export class Budget extends DurableObject {
+  constructor(ctx, env) { super(ctx, env); this.core = new CounterCore(ctx.storage.sql, COUNTER_LIMITS); }
+  take(n, client) { return this.core.take(n, client); }
+}
+const ALLOWED = new Set(['https://files.instinct.com']);
+const UP = { '/route': 'https://api.heigit.org/openrouteservice/v2/directions/driving-car/geojson', '/snap': 'https://api.heigit.org/openrouteservice/v2/snap/driving-car' }; // exact page origin(s) to be confirmed at deploy time
+const cors = o => ({ 'access-control-allow-origin': o, 'vary': 'origin' });
+export default {
+  async fetch(req, env) {
+    const origin = req.headers.get('origin') || '';
+    if (!(ALLOWED.has(origin) || (env.ALLOWED_ORIGIN && origin === env.ALLOWED_ORIGIN))) return new Response('forbidden', { status: 403 });
+    if (req.method === 'OPTIONS') return new Response(null, { headers: { ...cors(origin), 'access-control-allow-methods': 'POST', 'access-control-allow-headers': 'content-type' } });
+    if (req.method !== 'POST' || !UP[new URL(req.url).pathname]) return new Response('not found', { status: 404, headers: cors(origin) });
+    let body; try { body = await req.json(); } catch { return new Response('bad json', { status: 400, headers: cors(origin) }); }
+    const path = new URL(req.url).pathname, inIndia = p => Array.isArray(p) && p.length === 2 && p[0] > 67 && p[0] < 98 && p[1] > 6 && p[1] < 38;
+    let payload, cost = 1;
+    if (path === '/route') { const c = body?.coordinates; if (!(Array.isArray(c) && c.length >= 2 && c.length <= 12 && c.every(inIndia))) return new Response('bad coordinates', { status: 400, headers: cors(origin) }); payload = { coordinates: c }; if (body.radiuses === 'unlimited') payload.radiuses = c.map(() => -1); }
+    else { const l = body?.locations; if (!(Array.isArray(l) && l.length >= 1 && l.length <= 100 && l.every(inIndia))) return new Response('bad locations', { status: 400, headers: cors(origin) }); payload = { locations: l, radius: Math.min(Math.max(+body.radius || 350, 1), 350) }; }
+    const client = req.headers.get('cf-connecting-ip') || 'anon';
+    let r; try { r = await env.BUDGET.get(env.BUDGET.idFromName('global')).take(1, client); } catch { r = { ok: false, reason: 'budget unavailable (failing closed)' }; }
+    if (!r.ok) return new Response(JSON.stringify({ error: r.reason }), { status: 429, headers: { ...cors(origin), 'content-type': 'application/json' } });
+    const up = await fetch((env.UPSTREAM ? env.UPSTREAM + path.slice(1) : UP[path]), { method: 'POST', headers: { Authorization: env.ORS_KEY, 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+    return new Response(up.body, { status: up.status, headers: { ...cors(origin), 'content-type': 'application/json' } });
+  },
+};
