@@ -1,9 +1,10 @@
 // Pure planning engine. No network, no invented data: caller supplies a route (km along road) and
 // charger candidates with kmAlong + verified flag. Unverified chargers are never used as stops.
-export const CAR = { name: 'BE 6 SPORTEQ Launch Edition 79 kWh', batteryKwh: 79 };
+export const CAR = { name: 'BE 6 SPORTEQ Launch Edition 79 kWh', batteryKwh: 79, rangeAt100Km: 500 }; // rangeAt100Km is the owner's planning assumption, not a measured figure
+const USABLE_FRAC = 0.95;
 export const DEFAULTS = {
-  startPct: 90, kmPerKwh: 5, avgKmh: 65, minArrivePct: 15, chargeToPct: 80, avgChargeKw: 100,
-  lossPct: 10, usableFrac: 0.95, dayStartMin: 6 * 60, latestDriveEndMin: 19 * 60, minUsefulLegMin: 90,
+  startPct: 90, kmPerKwh: CAR.rangeAt100Km / (CAR.batteryKwh * USABLE_FRAC), avgKmh: 65, minArrivePct: 15, chargeToPct: 80, avgChargeKw: 100,
+  lossPct: 10, usableFrac: USABLE_FRAC, dayStartMin: 6 * 60, latestDriveEndMin: 19 * 60, minUsefulLegMin: 90,
   mealMin: 40, homeTariff: 10, routeTariff: 18, petrolPrice: 100, petrolKmpl: 15,
 };
 const pctToKm = (p, P) => (p / 100) * CAR.batteryKwh * P.usableFrac * P.kmPerKwh;
