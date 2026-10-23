@@ -43,18 +43,25 @@ export async function stopFood(stops) {
   return res;
 }
 
-// Names the random pin itself. "In X" only when the named place is within 3 km, otherwise "Near X" with the distance. One request, cached.
+// Names the random pin itself. A town or village from Nominatim counts as "In" only within 3 km. Otherwise the nearest place in the bundled
+// list of OpenStreetMap towns and larger villages is named as "Near X" with the real distance. State comes from Nominatim. One request, cached.
+let PLACES = null;
+const loadPlaces = async () => { if (PLACES) return PLACES; const base = (typeof window !== 'undefined' && window.EV_BASE) || ''; PLACES = await (await fetch(base + '/ev-planner/places.json')).json(); return PLACES; };
+const SETTLE = /^(village|town|city|hamlet|suburb|city_district|neighbourhood|quarter|locality|isolated_dwelling)$/;
 export async function pinName(lat, lon) {
-  const key = 'n' + lat.toFixed(3) + ',' + lon.toFixed(3), hit = ck(key); if (hit) return hit;
+  const key = 'n2' + lat.toFixed(3) + ',' + lon.toFixed(3), hit = ck(key); if (hit) return hit;
   let out = { title: null, state: null, rel: null };
   try {
     const n = await (await polite(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=14&accept-language=en&lat=${lat}&lon=${lon}`)).json(); const a = n.address || {};
-    const nm = a.suburb && (a.city || a.town) ? null : null;
-    const place = a.village || a.town || a.city || a.hamlet || a.suburb || a.city_district || a.county || a.state_district || null;
-    const state = a.state || a.state_district || null;
-    const d = n.lat && n.lon ? hav(lat, lon, +n.lat, +n.lon) : null;
-    if (place) { const inside = !!(n.addresstype && /^(village|town|city|hamlet|suburb|city_district|neighbourhood|quarter)$/.test(n.addresstype)) && (d == null || d <= 3); out = { title: place, state, rel: inside ? 'In' : 'Near', km: d == null ? null : Math.round(d * 10) / 10, kind: n.addresstype || null }; if (!inside && n.addresstype && /^(county|state_district|district)$/.test(n.addresstype)) out.rel = 'Near'; }
-    else if (state) out = { title: null, state, rel: null };
+    out.state = a.state || null;
+    const d0 = n.lat && n.lon ? hav(lat, lon, +n.lat, +n.lon) : null;
+    const own = a.village || a.town || a.city || a.hamlet || a.suburb || a.city_district || null;
+    if (own && n.addresstype && SETTLE.test(n.addresstype) && d0 != null && d0 <= 3) out = { title: own, state: out.state, rel: 'In', km: Math.round(d0 * 10) / 10 };
+    else {
+      const P = await loadPlaces(); let best = null, bd = 1e9;
+      for (const p of P) { if (Math.abs(p[1] - lat) > 1.2 || Math.abs(p[2] - lon) > 1.4) continue; const d = hav(lat, lon, p[1], p[2]); if (d < bd) { bd = d; best = p; } }
+      if (best) out = { title: best[0], state: out.state, rel: bd <= 3 ? 'In' : 'Near', km: Math.round(bd * 10) / 10 };
+    }
     cs(key, out);
   } catch (e) { out.err = e.message; }
   return out;

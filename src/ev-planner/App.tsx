@@ -40,7 +40,7 @@ function Demo({ text = "PREVIEW · not a routed trip" }: { text?: string }) { re
 
 const kmBetween = (a: number, b: number, c: number, d: number) => { const t = (x: number) => x * Math.PI / 180, h = Math.sin(t(c - a) / 2) ** 2 + Math.cos(t(a)) * Math.cos(t(c)) * Math.sin(t(d - b) / 2) ** 2; return 2 * 6371 * Math.asin(Math.sqrt(h)); };
 function Visits({ pt, example }: { pt: { lat: number; lon: number }; example: boolean }) {
-  const near = (VISIT as any[]).filter(v => Math.abs(v[1] - pt.lat) < 0.4 && Math.abs(v[2] - pt.lon) < 0.45).map(v => ({ n: v[0], en: v[4], k: v[3], d: kmBetween(pt.lat, pt.lon, v[1], v[2]) })).filter(v => v.d <= 40).sort((x, y) => x.d - y.d).slice(0, 5);
+  const near = (VISIT as any[]).filter(v => Math.abs(v[1] - pt.lat) < 0.4 && Math.abs(v[2] - pt.lon) < 0.45).filter(v => !/terminus|station|junction|airport|bus stand/i.test(v[0])).map(v => ({ n: v[0], en: v[4], k: v[3], d: kmBetween(pt.lat, pt.lon, v[1], v[2]) })).filter(v => v.d <= 40).sort((x, y) => x.d - y.d).slice(0, 5);
   return <div className="sugg-box"><h3>Possible visits nearby</h3>
     {near.length ? <ul>{near.map(v => <li key={v.n + v.d}><span>{v.en || v.n}{v.en ? <em> {v.n}</em> : null}</span><i>{v.k.replace('_', ' ')} · {v.d < 10 ? v.d.toFixed(1) : Math.round(v.d)} km</i></li>)}</ul> : <p>No notable named place within 40 km in the bundled extract. That is a data gap, not proof there is nothing to see.</p>}
     <small>Suggestions only: straight-line from the {example ? 'example destination' : 'road endpoint'}, not routed or counted in time or cost. Hours and access unknown. Partial: only single-point places with a Wikipedia or Wikidata link. © OpenStreetMap contributors, ODbL.</small></div>;
@@ -91,7 +91,7 @@ function Dice({ onGo, live, onPin }: { onGo: () => void; live: boolean; onPin: (
       </> : <>
         <span className="eyebrow">YOUR DESTINATION</span>
         <h2 className="big">{lab || (pname ? 'A remote spot in India' : 'Finding the place name…')}</h2>
-        <p className="sub">{pname && pname.rel === 'Near' && pname.km != null ? `The pin is about ${pname.km} km from ${pname.title}, not in the town itself. ` : ''}From {city}. <span className="muted">Pin {pin[1].toFixed(3)}° N, {pin[0].toFixed(3)}° E</span></p>
+        <p className="sub">{pname && pname.rel === 'Near' && pname.km != null ? `The pin is about ${pname.km} km from ${pname.title}, the nearest named town or larger village we have. ` : ''}From {city}. <span className="muted">Pin {pin[1].toFixed(3)}° N, {pin[0].toFixed(3)}° E</span></p>
         <div className="car">BE 6 SPORTEQ Launch Edition 79 kWh</div>
         <button className="btn" onClick={onGo}>Let's take our EV there</button>
         <button className="linkbtn" onClick={reveal} disabled={busy}>{busy ? 'Finding…' : 'Somewhere else'}</button>
