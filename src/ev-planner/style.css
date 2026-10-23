@@ -49,3 +49,5 @@
 .evp-attr{font-size:12px;color:var(--muted);margin:26px 0 0;line-height:1.7}.evp-foot{padding:22px 0 30px;margin-top:16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
 @media(max-width:860px){.evp-nav{padding:20px 22px}.evp-main{padding:32px 22px 0}.grid2,.grid2.trip,.grid2.sum{grid-template-columns:1fr;gap:20px}.stick{position:static}.big{font-size:32px}.headline .big{font-size:34px}.big-r .save{font-size:42px}.map{height:300px}.card{padding:22px}.stats4{grid-template-columns:1fr 1fr}.ins{grid-template-columns:1fr 1fr}.ev{grid-template-columns:48px 1fr}}
 @media(prefers-reduced-motion:reduce){.evp *{transition:none!important}}
+.modenote{margin:-10px 0 18px;padding:10px 14px;border-radius:12px;background:#f3e7d9;color:#7a4510;font-size:13px;max-width:640px}
+@media(max-width:860px){.reveal .side{order:-1}}

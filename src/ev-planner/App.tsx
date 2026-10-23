@@ -221,6 +221,7 @@ export function App() {
     }
   };
   return <VC.Provider value={V}>
+    {!live && <p className="modenote">Live routing is not switched on yet, so a new pin is not routed. This draft shows one labelled worked example.</p>}
     <nav className="steps" aria-label="Screens">{['Destination', live ? 'Trip' : 'Worked example', 'Summary'].map((l, i) => <button key={l} className={i === s ? 'on' : ''} onClick={() => go(i)} disabled={(i === 2 && !V.totals) || (live && i > 0 && !V.live)}>{l}</button>)}</nav>
     <div className="stage">{s === 0 ? <Dice onGo={toTrip} live={live} onPin={(city, pin, nm) => { sel.current = { city, pin, nm }; setV(live ? { live: true, status: 'pending', origin: { name: city }, events: [], pinPlace: nm } : EX0); }} /> : s === 1 ? <Itinerary onNext={() => go(2)} busy={busy} /> : <Summary />}</div>
     <details className="more wide"><summary>What is real and what is not</summary>
