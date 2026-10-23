@@ -64,6 +64,6 @@ export function GeoMap({ cis, bbox = [67.5, 6, 98.5, 37.5], markers, route, stra
 }
 
 export function Legend({ items }: { items: ('start' | 'ci' | 'dc' | 'unc' | 'end' | 'pin')[] }) {
-  const T: Record<string, string> = { start: 'Start', ci: 'Stop used', dc: 'Other 50 kW+ charger', unc: 'Overnight, unconfirmed', end: 'Road endpoint', pin: 'Your pin' };
+  const T: Record<string, string> = { start: 'Start', ci: 'Stop used', dc: 'Other 50 kW+ charger', unc: 'Overnight, unconfirmed', end: 'Road endpoint (not always the pin)', pin: 'Your pin' };
   return <div className="leg">{items.map(k => <span key={k}><i className={'lg k-' + k} />{T[k]}</span>)}</div>;
 }

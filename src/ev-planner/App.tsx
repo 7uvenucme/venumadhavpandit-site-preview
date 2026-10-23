@@ -18,7 +18,7 @@ const marksOf = (EX: any): Mk[] => [
   { at: [EX.origin.lon, EX.origin.lat], kind: 'start', label: EX.origin.name },
   ...thin((EX.chargers || []).filter((c: any) => !c.used && c.kmAlong > 1 && c.kmAlong < (EX.directKm || 0) - 25), bboxOf(EX)).map((c: any) => ({ at: [c.lon, c.lat] as [number, number], kind: 'dc' as const })),
   ...(EX.chargers || []).filter((c: any) => c.used).map((c: any) => ({ at: [c.lon, c.lat] as [number, number], kind: 'ci' as const, label: Math.round(c.kmAlong) + ' km' })),
-  { at: [EX.dest.lon, EX.dest.lat], kind: 'end', label: EX.live ? (EX.straightKm ? 'Road end' : 'Road end, within 350 m of pin') : EX.dest.name },
+  { at: [EX.dest.lon, EX.dest.lat], kind: 'end', label: EX.live ? ('Road end') : EX.dest.name },
 ];
 const bboxOf = (EX: any): [number, number, number, number] => {
   if (!EX.live) return [75.5, 11.8, 80.2, 18.2];
