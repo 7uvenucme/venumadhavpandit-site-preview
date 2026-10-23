@@ -120,13 +120,14 @@ function calc(EX: any, home: number, tariff: number, price: number, kmpl: number
 const nOf = (EX: any) => { const e = EX.events || []; return { nChg: e.filter((x: any) => x.kind === 'charge').length, nOv: e.filter((x: any) => x.kind === 'charge' && x.overnight).length } };
 const Mode = ({ live }: { live: boolean }) => live ? null : <span className="pill ex">Worked example</span>;
 
-function Dice({ onGo, live, onPin }: { onGo: () => void; live: boolean; onPin: (city: string, pin: [number, number], name?: any) => void }) {
+function Dice({ onGo, live, onPin, rollSignal }: { onGo: () => void; live: boolean; onPin: (city: string, pin: [number, number], name?: any) => void; rollSignal: number }) {
   const [pin, setPin] = useState<[number, number] | null>(null);
   const [pname, setPname] = useState<any>(null);
   const [facts, setFacts] = useState<any>(null);
   const [factsBusy, setFactsBusy] = useState(false);
   const [city, setCity] = useState('Mumbai');
   const [busy, setBusy] = useState(false);
+  React.useEffect(() => { if (rollSignal > 0) reveal(); }, [rollSignal]); // eslint-disable-line
   const reveal = () => {
     setBusy(true); setFacts(null);
     setTimeout(() => {
@@ -156,6 +157,7 @@ function Dice({ onGo, live, onPin }: { onGo: () => void; live: boolean; onPin: (
         <h2 className="big">{lab || (pname ? 'A remote spot in India' : 'Finding the place name…')}</h2>
         <p className="sub">{pname && pname.rel === 'Near' && pname.km != null ? `The pin is about ${pname.km} km from ${pname.title}, the nearest named town or larger village we have. ` : ''}About {straight.toLocaleString('en-IN')} km in a straight line from {city}. <span className="muted">Pin {pin[1].toFixed(3)}° N, {pin[0].toFixed(3)}° E</span></p>
         <div className="car">BE 6 SPORTEQ Launch Edition 79 kWh</div>
+        <label className="fld">Start city<select value={city} onChange={e => { const c = e.target.value; setCity(c); if (pin) onPin(c, pin, pname || undefined); }}>{Object.keys(CITIES).map(c => <option key={c}>{c}</option>)}</select></label>
         <button className="btn" onClick={onGo}>Let's take our EV there</button>
         <button className="linkbtn" onClick={reveal} disabled={busy}>{busy ? 'Finding…' : 'Somewhere else'}</button>
         {factsBusy && <p className="muted sm">Learning about the area…</p>}
@@ -169,7 +171,7 @@ function Dice({ onGo, live, onPin }: { onGo: () => void; live: boolean; onPin: (
   </section>;
 }
 
-function Itinerary({ onNext, busy }: { onNext: () => void; busy: boolean }) {
+function Itinerary({ onNext, busy, onElsewhere, onBack }: { onNext: () => void; busy: boolean; onElsewhere: () => void; onBack: () => void }) {
   const EX = useV(); const ev0 = EX.events || []; const live = !!EX.live;
   const st = EX.status || 'plan';
   const hasMap = st !== 'noroad';
@@ -182,8 +184,9 @@ function Itinerary({ onNext, busy }: { onNext: () => void; busy: boolean }) {
   return <section aria-label="Itinerary">
     <div className="headline"><div><span className="eyebrow">{EX.origin.name.toUpperCase()} TO</span><h2 className="big">{title}</h2>
       {live && EX.pin && <p className="sub">{epName ? `The road ends near ${epName}.` : 'The road ends near the pin.'}{EX.straightKm ? ` The pin is ${EX.straightKm} km further on, not routed or counted.` : ''}</p>}
-      {!live && <p className="sub">Worked example, a real route computed once. Your own pin is not routed in this preview.</p>}</div><Mode live={live} /></div>
-    {(st === 'noroad' || st === 'noroute' || st === 'error') ? <div className="card"><h3>{st === 'noroad' ? 'No road endpoint found' : st === 'noroute' ? 'No road route' : 'Stopped'}</h3><p>{EX.msg}</p><p className="muted">No trip is planned and nothing is counted as reachable. Go back and pick somewhere else.</p></div> : <>
+      {!live && <p className="sub">Worked example, a real route computed once. Your own pin is not routed in this preview.</p>}
+      {live && !busy && <button className="linkbtn" onClick={onBack}>Change start city or destination</button>}</div><Mode live={live} /></div>
+    {(st === 'noroad' || st === 'noroute' || st === 'noaccess' || st === 'error') ? <div className="card"><h3>{st === 'noroad' ? 'No road endpoint found' : st === 'noroute' ? 'No road route' : st === 'noaccess' ? 'Road access we cannot verify' : 'Stopped'}</h3><p>{EX.msg}</p><p className="muted">No trip is planned and nothing is counted as reachable by road.</p><button className="btn" onClick={onElsewhere}>Pick somewhere else</button></div> : <>
     <div className="grid2 trip">
       <div className="col">
         <div className="card tlc"><ol className="tl">
@@ -206,7 +209,7 @@ function Itinerary({ onNext, busy }: { onNext: () => void; busy: boolean }) {
             return <li key={i} className="ev end"><span className="t">{e.time}</span><div className="b"><strong>The drive ends here</strong><span>{live ? 'Road endpoint' : `Road endpoint: ${EX.dest.name}, city centre`} · arrive {e.pct}% · about {e.rangeKm} km range left</span></div></li>;
           })}
         </ol></div>
-        {st === 'gap' && <div className="card alert"><h3>This trip has a charging gap</h3><p>{(EX.gaps || []).join('; ') || 'A charging gap could not be filled'}. A gap means no usable charger in our data, not proof that none exists — arrange AC charging near it; no arrival time is promised for the gap.</p></div>}
+        {st === 'gap' && <div className="card alert"><h3>This trip has a charging gap</h3><p>{(EX.gaps || []).join('; ') || 'A charging gap could not be filled'}. A gap means no usable charger in our data, not proof that none exists — arrange AC charging near it; no arrival time is promised for the gap.</p><p>There is no cost summary for a trip with a gap: we only total trips that reach the destination, so the Summary step stays locked.</p><button className="btn" onClick={onElsewhere}>Roll another destination</button></div>}
         {st === 'partial' && <div className="card alert"><h3>Plan does not meet the reserve</h3><p>{(EX.problems || []).join('; ')}. Treat the stops as unresolved and arrange AC charging.</p></div>}
         <Around EX={EX} />
       </div>
@@ -218,6 +221,7 @@ function Itinerary({ onNext, busy }: { onNext: () => void; busy: boolean }) {
           <Legend items={live && EX.straightKm ? ['start', 'ci', 'dc', 'end', 'pin'] : ['start', 'ci', 'dc', 'end']} /></div>}
       </aside>
     </div>
+    {L && N && <div className="nextbar"><p className="muted">Route, charging stops and costs are ready.</p><button className="btn" onClick={onNext}>Next: the trip summary</button></div>}
     <details className="more wide"><summary>Assumptions, sources and licences</summary>
       <p><b>Real:</b> the 79 kWh battery size, the road route (OpenRouteService on OpenStreetMap data), charger positions (Open Charge Map plus Charge_iN by Mahindra's own station map) and the planner arithmetic. <b>Assumed, not measured:</b> about 500 km of range at 100%, 65 km/h average speed, a 06:00 start, and at least 15% charge left on every arrival. Tariffs and the petrol price are editable in the summary.</p>
       {EX.endNote && <p>{EX.endNote}</p>}
@@ -225,6 +229,7 @@ function Itinerary({ onNext, busy }: { onNext: () => void; busy: boolean }) {
       <p>{live ? 'Route computed now' : `Route computed once on ${EX.generated}`} by OpenRouteService (HeiGIT). Chargers: Open Charge Map {EX.fetched ? `records fetched ${EX.fetched}` : 'records'} plus Charge_iN's station map, read 23 Oct 2026 (55 listed as available, 3 in progress and left out). Triangles are stops the plan uses; squares are other public CCS2 chargers of 50 kW or more within 8 km of the road, not marked broken. Records can be old and live status is not checked, so any stop can be down or busy. A gap means no usable charger in this data, not proof none exists.</p>
       {EX.totals && <p>Detours total {EX.detourTotal} km and are inside the leg figures.{live && EX.orsCalls ? ` Routing calls used: ${EX.orsCalls}.` : ''}</p>}
       {(EX.rejected || []).length > 0 && <p>Chargers tested and dropped: {EX.rejected.map((r: any) => `${r.name} (${r.why})`).join('; ')}.</p>}
+      <p>Road-access check: if the road endpoint or the found route leaves the area covered by our access check (a public-domain Natural Earth outline, simplified to about 2 km, with a 5 km tolerance), we say we cannot verify road access instead of guessing. It is a practical routing check, not a statement about borders or territory.</p>
       <p>Place names: OpenStreetMap (Nominatim). Area facts: Wikipedia. Food, stay and visit names: OpenStreetMap extract of 22 Oct 2026 (Geofabrik, ODbL), partial coverage, straight-line distances, hours and prices unknown. India outline: Survey of India, Outline of India (generalised, 1:16 million), simplified by us to about 2 km — a draft display, reuse terms not confirmed. No live map service is called from this page.</p>
     </details>
     </>}
@@ -281,10 +286,12 @@ export function App() {
   const [s, setS] = useState(0);
   const [live, setLive] = useState(false);
   const [V, setV] = useState<any>(EX0);
+  const [rollSignal, setRollSignal] = useState(0);
   const [busy, setBusy] = useState(false);
   const sel = React.useRef<{ city: string; pin: [number, number]; nm?: any } | null>(null);
   React.useEffect(() => { (API ? probe(API) : Promise.resolve(false)).then(ok => { setLive(ok); }); }, []);
   const go = (n: number) => { setS(n); window.scrollTo?.({ top: 0 }); };
+  const elsewhere = () => { setRollSignal(x => x + 1); go(0); };
   const toTrip = async () => {
     if (!live || !sel.current) return go(1);
     setV({ live: true, status: 'pending', origin: { name: sel.current.city }, events: [], pinPlace: sel.current.nm }); setBusy(true); go(1);
@@ -296,7 +303,13 @@ export function App() {
   };
   return <VC.Provider value={V}>
     {!live && <p className="modenote">Live routing is unavailable right now, so a new pin cannot be routed. The itinerary and summary below show one labelled worked example.</p>}
-    <nav className="steps" aria-label="Screens">{['Destination', live ? 'Trip' : 'Worked example', 'Summary'].map((l, i) => <button key={l} className={i === s ? 'on' : ''} onClick={() => go(i)} disabled={(i === 2 && !V.totals) || (live && i > 0 && !V.live)}>{l}</button>)}</nav>
-    <div className="stage">{s === 0 ? <Dice onGo={toTrip} live={live} onPin={(city, pin, nm) => { sel.current = { city, pin, nm }; setV(live ? { live: true, status: 'pending', origin: { name: city }, events: [], pinPlace: nm } : EX0); }} /> : s === 1 ? <Itinerary onNext={() => go(2)} busy={busy} /> : <Summary />}</div>
+    <nav className="steps" aria-label="Steps">{['Destination', live ? 'Trip' : 'Worked example', 'Summary'].map((l, i) => {
+      const locked = (i === 2 && !V.totals) || (live && i > 0 && !V.live);
+      const done = i < s && !locked;
+      return <button key={l} className={(i === s ? 'on' : '') + (done ? ' done' : '')} onClick={() => go(i)} disabled={locked} title={locked ? (i === 1 ? 'Roll a destination first' : 'Needs a complete trip') : undefined}>{done ? '✓ ' : `${i + 1} · `}{l}</button>;
+    })}</nav>
+    {s === 0 && live && !V.live && <p className="stephint">Step 1 of 3: pick a start city, then Surprise me. That unlocks the trip.</p>}
+    {s === 1 && V.status === 'gap' && <p className="stephint">This trip has a charging gap, so step 3 stays locked: there is no complete trip to total.</p>}
+    <div className="stage">{s === 0 ? <Dice onGo={toTrip} live={live} rollSignal={rollSignal} onPin={(city, pin, nm) => { sel.current = { city, pin, nm }; setV(live ? { live: true, status: 'pending', origin: { name: city }, events: [], pinPlace: nm } : EX0); }} /> : s === 1 ? <Itinerary onNext={() => go(2)} busy={busy} onElsewhere={elsewhere} onBack={() => go(0)} /> : <Summary />}</div>
   </VC.Provider>;
 }

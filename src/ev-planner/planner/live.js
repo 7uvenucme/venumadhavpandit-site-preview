@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { planTrip } from './trip.mjs';
 import { findEndpoint } from './endpoint.mjs';
+import { accessFlag } from '../geo_defacto';
 import { hv } from './chargers.mjs';
 import OCM from '../ocm.json';
 const api = base => {
@@ -23,7 +24,15 @@ export async function runLive(base, city, o, pin) {
       if (!r.endpoint) return { ...base0, status: 'noroad', msg: r.note, orsCalls: calls };
       end = r.endpoint; straightKm = r.straightKm; endNote = `No road within 350 m of the pin. Searched sampled points on rings of 1 to 30 km around it and took the closest of those that snaps to a road (not proven nearest), ${r.straightKm} km away (${r.note}). The last ${r.straightKm} km is not routed.`;
     } else { end = pr[0]; const off = Math.round(hv(pin, end) * 1000); endNote = `A road point was found within 350 m of the pin: the road endpoint is the snapped point, ${off} m from the pin (the pin itself is not on the road).`; }
-    const t = await planTrip({ origin: o, dest: end, pois: OCM.pois, ors: { route } }); calls += t.orsCalls || 0;
+    const r0 = await route([o, end]); calls++;
+    if (!r0) return { ...base0, status: 'noroute', end: { lon: end[0], lat: end[1] }, endNote, straightKm, msg: 'No road route from ' + city + ' to the road endpoint. The point is not counted as reachable by road.', orsCalls: calls };
+    const af = accessFlag(r0.line, end);
+    if (af) return { ...base0, status: 'noaccess', end: { lon: end[0], lat: end[1] }, endNote, straightKm, orsCalls: calls,
+      msg: af.kind === 'endpoint'
+        ? `The nearest road to the pin is about ${Math.round(af.km)} km outside the area covered by our road-access check, so we cannot verify a drivable route from ${city}. The point is not counted as reachable by road.`
+        : `The only road route we found to this point leaves the area covered by our road-access check (about ${Math.round(af.km)} km outside it). We cannot verify whether the crossing on it is open, so this trip is not counted as drivable.` };
+    let prefetched = true; const routeCached = async c => { if (prefetched && JSON.stringify(c) === JSON.stringify([o, end])) { prefetched = false; return r0; } return route(c); };
+    const t = await planTrip({ origin: o, dest: end, pois: OCM.pois, ors: { route: routeCached } }); calls += t.orsCalls || 0;
     if (!t.route) return { ...base0, status: 'noroute', end: { lon: end[0], lat: end[1] }, endNote, straightKm, msg: 'No road route from ' + city + ' to the road endpoint. The point is not counted as reachable by road.', orsCalls: calls };
         const used = new Map((t.stops || []).map(s => [s.id, s]));
     const view = { ...base0, dest: { name: 'Road endpoint', lon: end[0], lat: end[1] }, end: { lon: end[0], lat: end[1] }, endNote, straightKm, directKm: +t.route.km.toFixed(1), orsCalls: calls, rejected: t.rejected || [],
