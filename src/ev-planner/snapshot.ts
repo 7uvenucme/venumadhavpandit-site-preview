@@ -24,7 +24,7 @@ export function savePng(EX: any, bbox: [number, number, number, number], N: { ev
   g.fillStyle = '#111'; g.font = '600 44px sans-serif'; g.fillText(`${T.roadKm} km · ${T.days} ${T.days > 1 ? 'days' : 'day'} · ${n} charging stops${N.nOv ? ', ' + N.nOv + ' overnight' : ''}`, 40, 960);
   g.font = '34px sans-serif'; g.fillStyle = '#333';
   g.fillText(`Arrive ${T.days > 1 ? 'Day ' + T.days + ' ' : ''}${T.finish} (06:00 start on Day 1) with about ${last.pct}% left`, 40, 1020);
-  g.font = '28px sans-serif'; g.fillText('BE 6 SPORTEQ Launch Edition 79 kWh', 40, 1058); g.font = '34px sans-serif';
+  g.font = '28px sans-serif'; g.fillText('My EV · 79 kWh', 40, 1058); g.font = '34px sans-serif';
   { const sv = N.pet - N.ev; g.font = '600 56px sans-serif'; g.fillStyle = sv >= 0 ? '#15803d' : '#b45309'; g.fillText(sv >= 0 ? `Saves Rs ${Math.round(sv).toLocaleString('en-IN')} vs petrol` : `Rs ${Math.round(-sv).toLocaleString('en-IN')} more than petrol`, 40, 1115); g.font = '34px sans-serif'; g.fillStyle = '#333'; }
   g.font = '24px sans-serif'; g.fillStyle = '#666';
   let yy = 1160; const wrap = (t: string) => { let line = ''; for (const w of t.split(' ')) { const x = line ? line + ' ' + w : w; if (g.measureText(x).width > W - 80 && line) { g.fillText(line, 40, yy); yy += 32; line = w; } else line = x; } if (line) { g.fillText(line, 40, yy); yy += 38; } };

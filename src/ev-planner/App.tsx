@@ -150,15 +150,15 @@ function Dice({ onGo, live, onPin, rollSignal }: { onGo: () => void; live: boole
         <h2 className="big">Pick where you start</h2>
         <p className="sub">The destination is a random point inside India. It stays hidden until you ask.</p>
         <label className="fld">Start city<select value={city} onChange={e => setCity(e.target.value)}>{Object.keys(CITIES).map(c => <option key={c}>{c}</option>)}</select></label>
-        <div className="car">BE 6 SPORTEQ Launch Edition 79 kWh</div>
+        <div className="car">My EV · 79 kWh</div>
         <button className="btn" onClick={reveal} disabled={busy}>{busy ? 'Finding a place…' : 'Surprise me'}</button>
       </> : <>
         <span className="eyebrow">YOUR DESTINATION</span>
         <h2 className="big">{lab || (pname ? 'A remote spot in India' : 'Finding the place name…')}</h2>
         <p className="sub">{pname && pname.rel === 'Near' && pname.km != null ? `The pin is about ${pname.km} km from ${pname.title}, the nearest named town or larger village we have. ` : ''}About {straight.toLocaleString('en-IN')} km in a straight line from {city}. <span className="muted">Pin {pin[1].toFixed(3)}° N, {pin[0].toFixed(3)}° E</span></p>
-        <div className="car">BE 6 SPORTEQ Launch Edition 79 kWh</div>
+        <div className="car">My EV · 79 kWh</div>
         <label className="fld">Start city<select value={city} onChange={e => { const c = e.target.value; setCity(c); if (pin) onPin(c, pin, pname || undefined); }}>{Object.keys(CITIES).map(c => <option key={c}>{c}</option>)}</select></label>
-        <button className="btn" onClick={onGo}>Let's take our EV there</button>
+        <button className="btn" onClick={onGo}>Take my EV there</button>
         <button className="linkbtn" onClick={reveal} disabled={busy}>{busy ? 'Finding…' : 'Somewhere else'}</button>
         {factsBusy && <p className="muted sm">Learning about the area…</p>}
         {!factsBusy && (area.length > 0 || pv.length > 0) && <div className="factarea"><span className="eyebrow sm">WHAT'S AROUND THERE</span>
